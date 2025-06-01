@@ -10,9 +10,9 @@ Welcome to my learning journey through Harvard's CS50 course. This repo document
 
 ## 📚 Table of Contents
 
-- [Week 0 – Scratch](./lecture0/summary.md)
-- [Week 1 – C](./lecture01/summary.md)
-- [Week 2 – Arrays](./lecture02/summary.md)
+- [Week 0 – Scratch](./lecture0/Summary.md)
+- [Week 1 – C](./lecture01/Summary.md)
+- [Week 2 – Arrays](./lecture02/Summary.md)
 - ...
 
 ## 📌 About the Course
