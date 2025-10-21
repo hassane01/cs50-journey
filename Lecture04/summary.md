@@ -1,7 +1,6 @@
 
 
-# Stylish README content for Lecture 4
-readme_content = """
+
 # 📘 CS50x 2025 – Lecture 4: Memory – Summary
 
 ---
@@ -67,10 +66,3 @@ readme_content = """
 
 ---
 
-> ✅ **Pro Tip for GitHub:** Save this as `CS50x_2025_Lecture4_README.md`. Markdown renders beautifully on GitHub.
-"""
-
-# Save to file
-readme_path = Path("CS50x_2025_Lecture4_README.md")
-readme_path.write_text(readme_content, encoding="utf-8")
-print(f"File saved to: {readme_path.resolve()}")
