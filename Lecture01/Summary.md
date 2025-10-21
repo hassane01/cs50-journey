@@ -166,4 +166,3 @@ printf("%i\n", *p); // prints 50
 
 ---
 
-> ✅ **Pro Tip for GitHub:** Save this file as `LECTURE1.md` or `README.md` inside your `Lecture1` folder. Use emoji headers and code fences for clear presentation!
