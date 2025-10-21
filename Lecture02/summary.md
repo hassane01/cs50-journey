@@ -141,4 +141,3 @@ By the end of Lecture 2, you now understand:
 
 ---
 
-> 🏁 **Pro Tip for GitHub:** Save this file as `LECTURE2.md` or `README.md` inside your `Lecture2` folder. Use tables, emoji headers, and code blocks to enhance readability!
