@@ -1,992 +1,1015 @@
-# 🐍 CS50 Lecture 6: Python
+# 🗄️ CS50 Lecture 7: SQL
 
 > **Course**: CS50 - Harvard University's Introduction to Computer Science  
-> **Lecture**: Week 6 - Python  
-> **Focus**: Transition from low-level C to high-level Python programming
+> **Lecture**: Week 7 - SQL (Structured Query Language)  
+> **Focus**: Databases, data relationships, and efficient data querying
 
 ---
 
 ## 🎯 Learning Objectives
 
 By the end of this lecture, you will understand:
-- Python as a higher-level, interpreted language
-- Key syntax differences between Python and C
-- Dynamic typing and automatic memory management
-- Object-Oriented Programming concepts
-- Python's built-in data structures and libraries
-- Exception handling and error management
-- File I/O and CSV operations
-- Package management with pip
+- Flat-file databases vs. relational databases
+- SQL syntax for creating, reading, updating, and deleting data
+- Database schemas, data types, and constraints
+- Primary and foreign keys for data relationships
+- SQL joins and complex queries
+- Database indexes for performance optimization
+- Integrating SQL with Python
+- Security concerns: race conditions and SQL injection attacks
 
 ---
 
 ## 📑 Table of Contents
 
-1. [Introduction to Python](#-introduction-to-python)
-2. [Functions and Basic Syntax](#-functions-and-basic-syntax)  
-3. [Data Types and Variables](#-data-types-and-variables)
-4. [Conditionals](#-conditionals)
-5. [Object-Oriented Programming](#-object-oriented-programming)
-6. [Loops](#-loops)
-7. [Exception Handling](#-exception-handling)
-8. [Data Structures](#-data-structures)
-9. [File Operations](#-file-operations)
-10. [Libraries and Modules](#-libraries-and-modules)
+1. [Introduction to SQL](#-introduction-to-sql)
+2. [Flat-File Databases](#-flat-file-databases)
+3. [Relational Databases](#-relational-databases)
+4. [SQL Fundamentals](#-sql-fundamentals)
+5. [Database Schema and Design](#-database-schema-and-design)
+6. [Advanced Queries and Joins](#-advanced-queries-and-joins)
+7. [Indexes and Performance](#-indexes-and-performance)
+8. [Python and SQL Integration](#-python-and-sql-integration)
+9. [Security Considerations](#-security-considerations)
 
 ---
 
-## 🚀 Introduction to Python
+## 🚀 Introduction to SQL
 
-**Python** is a **high-level, interpreted programming language** that emphasizes code readability and simplicity.
+**SQL (Structured Query Language)** is a **domain-specific language** designed specifically for managing and querying data in relational databases.
 
-### 🔄 C vs Python Comparison
+### 🎯 Why SQL?
 
-| Feature | C (Compiled) | Python (Interpreted) |
-|---------|-------------|---------------------|
-| **Memory Management** | Manual (`malloc`, `free`) | Automatic |
-| **Type Declaration** | Required (`int x;`) | Dynamic (`x = 5`) |
-| **Compilation** | Two steps: compile → run | One step: interpret |
-| **Syntax** | Verbose, explicit | Concise, readable |
-| **Hello World** | 6+ lines | 1 line |
+**Problem**: Python requires significant code to analyze data:
+- 14+ lines just to count favorite languages
+- Manual dictionary management
+- Explicit sorting logic
+- Time-consuming for simple questions
 
-### ⚡ Quick Demonstration
+**Solution**: SQL reduces complex data analysis to single-line queries!
 
-**Hello World Evolution:**
+### 📊 CRUD Operations
 
-**Scratch (Week 0):**
-```
-say "hello, world"
-```
+SQL supports four fundamental operations:
 
-**C (Week 1):**
-```c
-#include <stdio.h>
-
-int main(void)
-{
-    printf("hello, world\n");
-}
-```
-
-**Python (Week 6):**
-```python
-print("hello, world")
-```
-
-### 🎨 Powerful Libraries in Action
-
-**Image Processing** (4 lines vs hundreds in C):
-```python
-from PIL import Image, ImageFilter
-
-before = Image.open("bridge.bmp")
-after = before.filter(ImageFilter.BoxBlur(10))
-after.save("out.bmp")
-```
-
-**Problem Set 5 Spell Checker** (Entire dictionary implementation):
-```python
-words = set()
-
-def check(word):
-    return word.lower() in words
-
-def load(dictionary):
-    with open(dictionary) as file:
-        words.update(file.read().splitlines())
-    return True
-
-def size():
-    return len(words)
-
-def unload():
-    return True  # Python handles memory automatically!
-```
+| Operation | SQL Commands | Purpose |
+|-----------|-------------|---------|
+| **C**reate | `CREATE`, `INSERT` | Add data to database |
+| **R**ead | `SELECT` | Retrieve data from database |
+| **U**pdate | `UPDATE` | Modify existing data |
+| **D**elete | `DELETE`, `DROP` | Remove data from database |
 
 ---
 
-## 📝 Functions and Basic Syntax
+## 📁 Flat-File Databases
 
-### 🔤 Print Function Evolution
+**Flat-file databases** are the simplest form of data storage using plain text files.
 
-| Language | Syntax | Notes |
-|----------|--------|-------|
-| **C** | `printf("hello, world\n");` | Requires `\n` for newline |
-| **Python** | `print("hello, world")` | Newline automatic, no semicolon |
+### 📋 CSV Format (Comma-Separated Values)
 
-### 📥 Getting User Input
-
-**Three Ways to Handle User Input:**
-
-#### 1️⃣ String Concatenation
-```python
-from cs50 import get_string
-
-answer = get_string("What's your name? ")
-print("hello, " + answer)
+**Structure:**
+```csv
+Timestamp,language,problem
+10/28/2024 9:45:23,Python,Fiftyville
+10/28/2024 9:46:12,C,Mario
+10/28/2024 9:47:05,Python,"Hello, World"
 ```
 
-#### 2️⃣ Comma-Separated Arguments
-```python
-from cs50 import get_string
-
-answer = get_string("What's your name? ")
-print("hello,", answer)  # Automatic space insertion
-```
-
-#### 3️⃣ F-Strings (Most Popular) ⭐
-```python
-from cs50 import get_string
-
-answer = get_string("What's your name? ")
-print(f"hello, {answer}")
-```
-
-**🔑 Key Concept**: The `f` prefix creates a **format string** where `{variable}` gets replaced with the variable's value.
-
-### 🛠️ Named Parameters
-
-Python functions support **named parameters** alongside **positional parameters**.
-
-**Print Function Signature:**
-```python
-print(*objects, sep=' ', end='\n', file=sys.stdout, flush=False)
-```
-
-**Customizing Output:**
-```python
-print("hello, world", end="!\n")  # Custom ending
-print("A", "B", "C", sep="-")     # Custom separator: A-B-C
-```
-
-### 💡 Import Styles
-
-**Two common import patterns:**
-
-```python
-# Method 1: Import entire module
-import cs50
-name = cs50.get_string("Name: ")
-
-# Method 2: Import specific functions
-from cs50 import get_string
-name = get_string("Name: ")
-```
-
----
-
-## 🔢 Data Types and Variables
-
-### 📊 Python Data Types
-
-Python uses **dynamic typing** - no need to declare variable types!
-
-#### Primitive Types
-```python
-# C: int counter = 0;
-counter = 0        # Python automatically infers int
-
-# C: char name[50];
-name = "David"     # Python automatically infers str
-
-# C: float price = 9.99;
-price = 9.99       # Python automatically infers float
-
-# C: bool flag = true;
-flag = True        # Note: Capital T and F
-```
-
-#### Built-in Data Types
-| Type | Python Name | Notes |
-|------|-------------|-------|
-| **Boolean** | `bool` | `True`, `False` (capitalized) |
-| **Integer** | `int` | Arbitrary precision (no overflow!) |
-| **Float** | `float` | Double precision by default |
-| **String** | `str` | No separate `char` type |
-
-#### Built-in Data Structures
-| Structure | Purpose | Example |
-|-----------|---------|---------|
-| **`list`** | Dynamic arrays | `[1, 2, 3]` |
-| **`dict`** | Key-value pairs | `{"name": "David"}` |
-| **`set`** | Unique values | `{1, 2, 3}` |
-| **`tuple`** | Immutable sequences | `(x, y)` |
-
-### 🔄 Variable Operations
-
-**Incrementing (C vs Python):**
-
-| Operation | C | Python | Supported? |
-|-----------|---|--------|-----------|
-| Assignment | `counter = counter + 1;` | `counter = counter + 1` | ✅ |
-| Compound | `counter += 1;` | `counter += 1` | ✅ |
-| Increment | `counter++;` | `counter++` | ❌ |
-
-### 🧮 Calculator Example
-
-**Type Conversion Demonstration:**
-
-```python
-# Problem: input() returns strings
-x = input("x: ")  # User types "1"
-y = input("y: ")  # User types "2"
-print(x + y)      # Output: "12" (concatenation!)
-
-# Solution: Type conversion
-x = int(input("x: "))
-y = int(input("y: "))
-print(x + y)      # Output: 3 (addition!)
-```
-
-**🎯 Key Insight**: Python's `+` operator is **overloaded** - works differently for strings (concatenation) vs numbers (addition).
-
----
-
-## 🔀 Conditionals
-
-### 📋 Syntax Comparison
-
-**Major Differences from C:**
-- ❌ No parentheses around conditions
-- ✅ Colon `:` after condition
-- ✅ **Indentation matters** (replaces curly braces)
-- ✅ `elif` instead of `else if`
-
-#### If Statements
-```python
-# C Style
-if (x < y) {
-    printf("x is less than y\n");
-}
-
-# Python Style  
-if x < y:
-    print("x is less than y")
-```
-
-#### If-Elif-Else Chain
-```python
-x = int(input("What's x? "))
-y = int(input("What's y? "))
-
-if x < y:
-    print("x is less than y")
-elif x > y:
-    print("x is greater than y")
-else:
-    print("x is equal to y")
-```
-
-### 🔤 String Comparison
-
-**Massive Improvement over C:**
-
-```python
-# C (complicated)
-char *s = get_string("s: ");
-char *t = get_string("t: ");
-if (strcmp(s, t) == 0) { ... }
-
-# Python (simple!)
-s = input("s: ")
-t = input("t: ")
-if s == t:
-    print("Same")
-else:
-    print("Different")
-```
-
-### 🔗 Logical Operators
-
-| C Operator | Python Operator | Example |
-|-----------|----------------|---------|
-| `\|\|` | `or` | `if s == "Y" or s == "y":` |
-| `&&` | `and` | `if age >= 18 and has_license:` |
-| `!` | `not` | `if not is_valid:` |
-
-### 🎯 The `in` Operator
-
-**Elegant membership testing:**
-
-```python
-# Old way (verbose)
-s = input("Do you agree? ")
-if s == "Y" or s == "y" or s == "yes" or s == "Yes":
-    print("Agreed")
-
-# Python way (elegant)
-s = input("Do you agree? ")
-if s in ["Y", "y", "yes", "Yes"]:
-    print("Agreed")
-```
-
----
-
-## 🎭 Object-Oriented Programming
-
-### 🏗️ Core Concepts
-
-**Object-Oriented Programming (OOP)** treats data types as **objects** with associated **methods** (functions).
-
-#### 📦 Objects = Data + Methods
-
-```python
-name = "david"      # name is a string object
-name.upper()        # .upper() is a method of string objects
-name.lower()        # .lower() is a method of string objects
-name.capitalize()   # .capitalize() is a method of string objects
-```
-
-### 🔤 String Methods
-
-**Common String Methods:**
-
-| Method | Purpose | Example |
-|--------|---------|---------|
-| `.lower()` | Convert to lowercase | `"HELLO".lower()` → `"hello"` |
-| `.upper()` | Convert to uppercase | `"hello".upper()` → `"HELLO"` |
-| `.capitalize()` | Capitalize first letter | `"hello".capitalize()` → `"Hello"` |
-| `.isnumeric()` | Check if all digits | `"123".isnumeric()` → `True` |
-
-### ⛓️ Method Chaining
-
-**Powerful technique for data transformation:**
-
-```python
-# Individual steps
-user_input = input("Do you agree? ")
-lowercased = user_input.lower()
-if lowercased in ["y", "yes"]:
-    print("Agreed")
-
-# Chained (more elegant)
-if input("Do you agree? ").lower() in ["y", "yes"]:
-    print("Agreed")
-```
-
----
-
-## 🔄 Loops
-
-### 🔁 While Loops
-
-**Syntax remains similar to C:**
-
-```python
-# C style
-while (i < 3) {
-    printf("meow\n");
-    i++;
-}
-
-# Python style
-i = 0
-while i < 3:
-    print("meow")
-    i += 1
-```
-
-### 🔢 For Loops
-
-**Python's `for` loops are fundamentally different and more powerful than C:**
-
-#### Traditional C-Style Loop (Avoid)
-```python
-# Don't do this in Python!
-i = 0
-while i < 3:
-    print("meow")
-    i += 1
-```
-
-#### Pythonic For Loop with Range
-```python
-# Better: Use range()
-for i in range(3):    # 0, 1, 2
-    print("meow")
-
-# If you don't use the loop variable
-for _ in range(3):    # _ indicates unused variable
-    print("meow")
-```
-
-#### For-Each Style Loop
-```python
-# Loop over collection elements directly
-names = ["Alice", "Bob", "Charlie"]
-for name in names:
-    print(f"Hello, {name}")
-
-# Loop over string characters
-word = "hello"
-for char in word:
-    print(char.upper(), end="")
-```
-
-### 🏗️ Defining Functions
-
-**Python functions use `def` keyword:**
-
-```python
-def meow():
-    print("meow")
-
-def meow_n_times(n):
-    for _ in range(n):
-        print("meow")
-
-# Function calls
-meow()
-meow_n_times(3)
-```
-
-### 📋 Function Organization
-
-**Best Practice - Use `main()` function:**
-
-```python
-def main():
-    number = int(input("Number: "))
-    meow(number)
-
-def meow(n):
-    for _ in range(n):
-        print("meow")
-
-# Call main at the end
-main()
-```
-
-**🎯 Why?** Functions must be **defined before** they're called in Python (unlike C with prototypes).
-
-### 🔄 Alternative Entry Point
-
-**Professional Python convention:**
-
-```python
-def main():
-    meow(3)
-
-def meow(n):
-    for _ in range(n):
-        print("meow")
-
-if __name__ == "__main__":
-    main()
-```
-
-**📚 Explanation**: This allows the file to work as both a script and a module.
-
----
-
-## ⚠️ Exception Handling
-
-### 🚨 The Problem with Traditional Error Handling
-
-**C approach (sentinel values):**
-```c
-int n = get_int("Number: ");  // Returns some error value for invalid input
-if (n == /* some error value */) {
-    // Handle error
-}
-```
-
-**❌ Problems:**
-- What if the error value is also a valid input?
-- Inconsistent error signaling across functions
-
-### 🛡️ Python's Exception System
-
-**Exceptions** are Python's elegant way to handle errors:
-
-```python
-# This will crash with ValueError if input is invalid
-n = int(input("Number: "))
-print("Integer")
-```
-
-### 🎯 Try-Except Blocks
-
-**Basic exception handling:**
-
-```python
-try:
-    n = int(input("Number: "))
-    print("Integer")
-except ValueError:
-    print("Not integer")
-```
-
-### 🎭 Try-Except-Else Pattern
-
-**Better style with `else` block:**
-
-```python
-try:
-    n = int(input("Number: "))
-except ValueError:
-    print("Not integer")
-else:
-    print("Integer")  # Only runs if no exception
-```
-
-**🔑 Key Concept**: `else` block only executes if the `try` block completes **without** an exception.
-
-### 🔄 How CS50's `get_int()` Works
-
-**Behind the scenes:**
-
-```python
-def get_int(prompt):
-    while True:
-        try:
-            return int(input(prompt))
-        except ValueError:
-            print("Invalid input. Try again.")
-            # Loop continues
-```
-
-### 🏷️ Common Exception Types
-
-| Exception | Cause | Example |
-|-----------|-------|---------|
-| `ValueError` | Invalid type conversion | `int("hello")` |
-| `NameError` | Undefined variable | Using undefined `x` |
-| `KeyError` | Invalid dictionary key | `dict["missing_key"]` |
-| `IndexError` | Invalid list index | `list[999]` |
-| `KeyboardInterrupt` | Ctrl+C pressed | User interruption |
-
----
-
-## 📊 Data Structures
-
-### 📝 Lists
-
-**Dynamic, resizable arrays:**
-
-#### Creating and Using Lists
-```python
-# Declaration with values
-scores = [72, 73, 33]
-
-# Empty list
-scores = []
-
-# Adding elements
-scores.append(85)
-scores.append(92)
-
-# Alternative: concatenation
-scores = scores + [78]
-scores += [90]
-```
-
-#### Built-in Functions
-```python
-scores = [72, 73, 33]
-
-length = len(scores)      # 3
-total = sum(scores)       # 178
-average = sum(scores) / len(scores)  # 59.33
-
-print(f"Average: {average}")
-```
-
-#### Membership Testing
-```python
-names = ["Alice", "Bob", "Charlie"]
-name = input("Name: ")
-
-if name in names:
-    print("Found")
-else:
-    print("Not found")
-```
-
-#### For Loop with Else
-```python
-names = ["Alice", "Bob", "Charlie"]
-name = input("Name: ")
-
-for n in names:
-    if n == name:
-        print("Found")
-        break
-else:  # Only executes if loop completes without break
-    print("Not found")
-```
-
-### 🗂️ Dictionaries
-
-**Key-value pairs (hash tables):**
-
-#### List of Dictionaries
-```python
-people = [
-    {"name": "Alice", "number": "+1-617-495-1000"},
-    {"name": "Bob", "number": "+1-617-495-1000"},
-    {"name": "Charlie", "number": "+1-949-468-2750"}
-]
-
-# Searching
-name = input("Name: ")
-for person in people:
-    if person["name"] == name:
-        print(f"Found: {person['number']}")
-        break
-else:
-    print("Not found")
-```
-
-#### Direct Dictionary (More Efficient)
-```python
-people = {
-    "Alice": "+1-617-495-1000",
-    "Bob": "+1-617-495-1000", 
-    "Charlie": "+1-949-468-2750"
-}
-
-# Searching (much simpler!)
-name = input("Name: ")
-if name in people:
-    print(f"Found: {people[name]}")
-else:
-    print("Not found")
-```
-
-**🎯 Key Advantages of Dictionaries:**
-- ⚡ O(1) average lookup time
-- 🎯 Direct key access
-- 🧹 Cleaner, more readable code
-
----
-
-## 📁 File Operations
-
-### 💻 Command Line Arguments
-
-**Using `sys.argv` (similar to C's argv):**
-
-```python
-import sys
-
-# sys.argv[0] is script name
-# sys.argv[1] is first argument, etc.
-
-if len(sys.argv) == 2:
-    print(f"Hello, {sys.argv[1]}")
-else:
-    print("Hello, world")
-```
-
-### 🚪 Exit Status
-
-**Explicit exit codes:**
-
-```python
-import sys
-
-if len(sys.argv) != 2:
-    print("Missing command-line argument")
-    sys.exit(1)  # Exit with error status
-else:
-    print(f"Hello, {sys.argv[1]}")
-    sys.exit(0)  # Exit with success status
-```
-
-**💡 Check exit status in terminal:** `echo $?`
-
-### 📄 CSV File Operations
-
-**Reading and writing structured data:**
-
-#### Writing CSV Files
+**Key Features:**
+- ✅ First row contains column headers
+- ✅ Commas separate column values
+- ✅ Quotes protect commas within data
+- ✅ Universal format (Excel, Google Sheets, Numbers)
+
+### 🐍 Python CSV Processing
+
+#### Basic CSV Reading
 ```python
 import csv
 
-name = input("Name: ")
-number = input("Number: ")
-
-# Method 1: Basic writer
-with open("phonebook.csv", "a") as file:
-    writer = csv.writer(file)
-    writer.writerow([name, number])
-
-# Method 2: Dictionary writer (better for complex data)
-with open("phonebook.csv", "a") as file:
-    writer = csv.DictWriter(file, fieldnames=["name", "number"])
-    writer.writerow({"name": name, "number": number})
-```
-
-#### Reading CSV Files
-```python
-import csv
-
-with open("phonebook.csv", "r") as file:
+with open("favorites.csv", "r") as file:
     reader = csv.reader(file)
+    next(reader)  # Skip header row
+    
     for row in reader:
-        print(f"Name: {row[0]}, Number: {row[1]}")
-
-# Dictionary reader
-with open("phonebook.csv", "r") as file:
-    reader = csv.DictReader(file)
-    for row in reader:
-        print(f"Name: {row['name']}, Number: {row['number']}")
+        print(row[1])  # Print language column
 ```
 
-**🔑 `with` Statement**: **Context manager** that automatically closes files, even if errors occur.
+#### Dictionary Reader (More Robust)
+```python
+import csv
+
+with open("favorites.csv", "r") as file:
+    reader = csv.DictReader(file)
+    
+    for row in reader:
+        print(row["language"])  # Access by column name
+```
+
+**🎯 Advantage**: Column order changes won't break your code!
+
+### 📊 Counting with Dictionaries
+
+**Goal**: Count occurrences of each language
+
+```python
+import csv
+
+counts = {}
+
+with open("favorites.csv", "r") as file:
+    reader = csv.DictReader(file)
+    
+    for row in reader:
+        favorite = row["language"]
+        
+        if favorite in counts:
+            counts[favorite] += 1
+        else:
+            counts[favorite] = 1
+
+# Sort by count (descending)
+for language in sorted(counts, key=counts.get, reverse=True):
+    print(f"{language}: {counts[language]}")
+```
+
+**Output:**
+```
+Python: 243
+C: 59
+Scratch: 11
+```
+
+### ⚠️ Limitations of Flat-Files
+
+- ❌ No built-in query language
+- ❌ Entire file must be loaded into memory
+- ❌ Inefficient for large datasets
+- ❌ No data relationships
+- ❌ Manual sorting and filtering
 
 ---
 
-## 📚 Libraries and Modules
+## 🗄️ Relational Databases
 
-### 🐍 Python Package Index (PyPI)
+**Relational databases** organize data into **tables** with **rows** and **columns**, enabling relationships between different data entities.
 
-**`pip` - The Package Installer for Python:**
+### 🔧 SQLite Setup
 
+**SQLite** is a lightweight, file-based SQL database.
+
+#### Creating a Database
 ```bash
-pip install package_name
+sqlite3 favorites.db
 ```
 
-### 🎭 Fun Examples
+#### Importing CSV Data
+```sql
+.mode csv
+.import favorites.csv favorites
+```
 
-#### Cowsay
+#### Viewing the Schema
+```sql
+.schema
+```
+
+**Output:**
+```sql
+CREATE TABLE favorites(
+  "Timestamp" TEXT,
+  "language" TEXT,
+  "problem" TEXT
+);
+```
+
+### 📊 Basic SQL Queries
+
+#### Select All Data
+```sql
+SELECT * FROM favorites;
+```
+
+#### Select Specific Column
+```sql
+SELECT language FROM favorites;
+```
+
+#### Count Total Rows
+```sql
+SELECT COUNT(*) FROM favorites;
+```
+
+#### Count Unique Values
+```sql
+SELECT COUNT(DISTINCT language) FROM favorites;
+```
+
+**Output:** `3` (Scratch, C, Python)
+
+---
+
+## 🔍 SQL Fundamentals
+
+### 🎯 WHERE Clause (Filtering)
+
+**Filter by single condition:**
+```sql
+SELECT COUNT(*) 
+FROM favorites 
+WHERE language = 'C';
+```
+
+**Multiple conditions (AND):**
+```sql
+SELECT COUNT(*) 
+FROM favorites 
+WHERE language = 'C' AND problem = 'Mario';
+```
+
+**Multiple conditions (OR):**
+```sql
+SELECT COUNT(*) 
+FROM favorites 
+WHERE language = 'C' 
+  AND (problem = 'Mario' OR problem = 'Scratch');
+```
+
+### 🔤 Pattern Matching with LIKE
+
+**Wildcard operator:** `%` matches any characters
+
+```sql
+SELECT COUNT(*) 
+FROM favorites 
+WHERE problem LIKE 'Hello, %';
+```
+
+**Matches:**
+- "Hello, World"
+- "Hello, It's Me"
+- Any string starting with "Hello, "
+
+### 📊 GROUP BY (Aggregation)
+
+**Count occurrences of each language:**
+```sql
+SELECT language, COUNT(*) 
+FROM favorites 
+GROUP BY language;
+```
+
+**Output:**
+```
+C|59
+Python|243
+Scratch|11
+```
+
+### 🔢 ORDER BY (Sorting)
+
+**Sort by count (descending):**
+```sql
+SELECT language, COUNT(*) AS n
+FROM favorites
+GROUP BY language
+ORDER BY n DESC;
+```
+
+**Using alias `AS` for readability:**
+- `AS n` creates an alias for `COUNT(*)`
+- Can reference alias in `ORDER BY` clause
+
+### 🎯 LIMIT (Restricting Results)
+
+**Get top result only:**
+```sql
+SELECT language, COUNT(*) AS n
+FROM favorites
+GROUP BY language
+ORDER BY n DESC
+LIMIT 1;
+```
+
+**Output:**
+```
+Python|243
+```
+
+**🎉 Achievement**: Reduced 14 lines of Python to 1 SQL query!
+
+---
+
+## 🏗️ Database Schema and Design
+
+### 📐 Schema Definition
+
+A **schema** defines the structure of your database:
+- Tables and their relationships
+- Column names and data types
+- Constraints and keys
+
+### 📊 SQLite Data Types
+
+| Type | Description | Examples |
+|------|-------------|----------|
+| `INTEGER` | Whole numbers | `1`, `42`, `-5` |
+| `NUMERIC` | Generic numbers, dates | `2024`, dates, years |
+| `REAL` | Floating-point | `3.14`, `98.6` |
+| `TEXT` | Strings | `"Hello"`, `"Python"` |
+| `BLOB` | Binary data | Images, files |
+
+### 🔒 Constraints
+
+**Constraints** enforce data integrity:
+
+| Constraint | Purpose | Example |
+|------------|---------|---------|
+| `NOT NULL` | Column must have a value | `title TEXT NOT NULL` |
+| `UNIQUE` | All values must be distinct | `email TEXT UNIQUE` |
+| `PRIMARY KEY` | Unique identifier for rows | `id INTEGER PRIMARY KEY` |
+| `FOREIGN KEY` | Links to another table | `show_id INTEGER REFERENCES shows(id)` |
+
+### 🗝️ Primary and Foreign Keys
+
+#### Primary Key
+**Uniquely identifies** each row in a table.
+
+```sql
+CREATE TABLE shows (
+    id INTEGER PRIMARY KEY,
+    title TEXT NOT NULL,
+    year NUMERIC,
+    episodes INTEGER
+);
+```
+
+#### Foreign Key
+**Establishes relationships** between tables.
+
+```sql
+CREATE TABLE ratings (
+    show_id INTEGER NOT NULL REFERENCES shows(id),
+    rating REAL NOT NULL,
+    votes INTEGER NOT NULL
+);
+```
+
+**🔗 Relationship**: Each rating belongs to exactly one show.
+
+### 🎭 Database Design Example: IMDb
+
+**Shows Database Structure:**
+
+```
+┌─────────────┐
+│   SHOWS     │
+├─────────────┤
+│ id (PK)     │
+│ title       │
+│ year        │
+│ episodes    │
+└─────────────┘
+       ↑
+       │ (one-to-one)
+       │
+┌─────────────┐
+│  RATINGS    │
+├─────────────┤
+│ show_id(FK) │
+│ rating      │
+│ votes       │
+└─────────────┘
+
+       ↑
+       │ (one-to-many)
+       │
+┌─────────────┐
+│   GENRES    │
+├─────────────┤
+│ show_id(FK) │
+│ genre       │
+└─────────────┘
+```
+
+**Relationship Types:**
+1. **One-to-One**: Each show has one rating
+2. **One-to-Many**: Each show can have multiple genres
+3. **Many-to-Many**: Shows and actors (requires join table)
+
+### 🔗 Many-to-Many Relationships
+
+**Problem**: A show has multiple stars; an actor stars in multiple shows.
+
+**Solution**: **Join table** (intersection table)
+
+```sql
+CREATE TABLE people (
+    id INTEGER PRIMARY KEY,
+    name TEXT NOT NULL,
+    birth NUMERIC
+);
+
+CREATE TABLE stars (
+    show_id INTEGER NOT NULL REFERENCES shows(id),
+    person_id INTEGER NOT NULL REFERENCES people(id)
+);
+```
+
+**Visual:**
+```
+┌─────────┐         ┌─────────┐         ┌─────────┐
+│  SHOWS  │────────>│  STARS  │<────────│  PEOPLE │
+│         │         │         │         │         │
+│ id (PK) │         │show_id  │         │ id (PK) │
+│ title   │         │person_id│         │ name    │
+└─────────┘         └─────────┘         └─────────┘
+```
+
+---
+
+## 🔄 Data Manipulation
+
+### ➕ INSERT (Create)
+
+**Add new row:**
+```sql
+INSERT INTO favorites (language, problem) 
+VALUES ('SQL', 'Fiftyville');
+```
+
+**⚠️ Result**: `Timestamp` will be `NULL` (no value provided)
+
+### 🗑️ DELETE (Remove)
+
+**Delete specific rows:**
+```sql
+DELETE FROM favorites 
+WHERE Timestamp IS NULL;
+```
+
+**⚠️ WARNING**: Without `WHERE`, deletes **ALL** rows!
+
+### 🔄 UPDATE (Modify)
+
+**Update specific rows:**
+```sql
+UPDATE favorites 
+SET language = 'SQL', problem = 'Fiftyville'
+WHERE language = 'C' AND problem = 'Mario';
+```
+
+**⚠️ DANGER**: Without `WHERE`, updates **ALL** rows!
+
+```sql
+-- DESTRUCTIVE: Updates ALL rows!
+UPDATE favorites 
+SET language = 'SQL';
+```
+
+---
+
+## 🔗 Advanced Queries and Joins
+
+### 🎯 Subqueries (Nested Queries)
+
+**Find shows with rating ≥ 6.0:**
+```sql
+SELECT title 
+FROM shows 
+WHERE id IN (
+    SELECT show_id 
+    FROM ratings 
+    WHERE rating >= 6.0
+);
+```
+
+**Find genres for "Catweazle":**
+```sql
+SELECT genre 
+FROM genres 
+WHERE show_id = (
+    SELECT id 
+    FROM shows 
+    WHERE title = 'Catweazle'
+);
+```
+
+### 🔗 JOIN Operations
+
+**Basic JOIN syntax:**
+```sql
+SELECT title, rating 
+FROM shows 
+JOIN ratings ON shows.id = ratings.show_id
+WHERE rating >= 6.0
+LIMIT 10;
+```
+
+**Multiple JOINs:**
+```sql
+SELECT title, genre 
+FROM shows
+JOIN genres ON shows.id = genres.show_id
+WHERE title = 'Catweazle';
+```
+
+### 🎭 Complex Query: Find All Shows for an Actor
+
+#### Method 1: Nested Queries
+```sql
+SELECT title 
+FROM shows 
+WHERE id IN (
+    SELECT show_id 
+    FROM stars 
+    WHERE person_id = (
+        SELECT id 
+        FROM people 
+        WHERE name = 'Steve Carell'
+    )
+);
+```
+
+#### Method 2: Explicit JOINs (Preferred)
+```sql
+SELECT title 
+FROM shows
+JOIN stars ON shows.id = stars.show_id
+JOIN people ON stars.person_id = people.id
+WHERE people.name = 'Steve Carell';
+```
+
+#### Method 3: Implicit JOINs (Older Style)
+```sql
+SELECT title 
+FROM shows, stars, people
+WHERE shows.id = stars.show_id
+  AND stars.person_id = people.id
+  AND people.name = 'Steve Carell';
+```
+
+**🎯 Best Practice**: Use explicit `JOIN` syntax for clarity.
+
+---
+
+## ⚡ Indexes and Performance
+
+### 🐢 The Performance Problem
+
+**Without indexes:**
+```sql
+SELECT title FROM shows WHERE title = 'The Office';
+```
+⏱️ **Time**: ~0.2 seconds (scanning 150,000+ rows)
+
+### 📚 What Are Indexes?
+
+**Indexes** are data structures (typically **B-trees**) that speed up data retrieval.
+
+**Analogy**: Like a book's index pointing to page numbers
+
+### 🚀 Creating Indexes
+
+**Syntax:**
+```sql
+CREATE INDEX index_name ON table_name (column_name);
+```
+
+**Examples:**
+```sql
+CREATE INDEX title_index ON shows (title);
+CREATE INDEX name_index ON people (name);
+CREATE INDEX person_id_index ON stars (person_id);
+```
+
+### ⚡ Performance Comparison
+
+**Before index:**
+```sql
+.timer ON
+SELECT * FROM shows WHERE title = 'The Office';
+```
+⏱️ **Time**: 0.2 seconds
+
+**After index:**
+```sql
+CREATE INDEX title_index ON shows (title);
+SELECT * FROM shows WHERE title = 'The Office';
+```
+⏱️ **Time**: 0.001 seconds (200× faster!)
+
+### ⚖️ Index Trade-offs
+
+| Pros | Cons |
+|------|------|
+| ✅ Much faster `SELECT` queries | ❌ More storage space |
+| ✅ Speeds up `WHERE` clauses | ❌ Slower `INSERT` operations |
+| ✅ Speeds up `JOIN` operations | ❌ Slower `UPDATE` operations |
+| ✅ Speeds up `ORDER BY` | ❌ Slower `DELETE` operations |
+
+**🎯 Best Practice**: Create indexes on columns frequently used in:
+- `WHERE` clauses
+- `JOIN` conditions
+- `ORDER BY` clauses
+
+---
+
+## 🐍 Python and SQL Integration
+
+### 🔗 CS50 SQL Library
+
+**Connecting to database:**
 ```python
-# Installation: pip install cowsay
+from cs50 import SQL
 
-import cowsay
-
-name = input("What's your name? ")
-cowsay.cow(f"Hello, {name}")
+# Connect to SQLite database
+db = SQL("sqlite:///favorites.db")
 ```
 
-#### QR Code Generator
+### 📊 Executing Queries
+
+**Basic query:**
 ```python
-# Installation: pip install qrcode
+favorite = input("Favorite: ")
 
-import qrcode
+# Execute query with placeholder
+rows = db.execute(
+    "SELECT COUNT(*) AS n FROM favorites WHERE language = ?",
+    favorite
+)
 
-img = qrcode.make("https://youtu.be/xvFZjo5PgG0")
-img.save("qr.png")
+# Access results
+if rows:
+    row = rows[0]
+    print(row["n"])
 ```
 
-### 🔧 Practical Libraries
+**🔑 Key Concepts:**
+- `db.execute()` returns a **list of dictionaries**
+- Each dictionary represents a row
+- Keys are column names
+- `?` is a **placeholder** for safe parameter substitution
 
-| Library | Purpose | Installation |
-|---------|---------|-------------|
-| **PIL/Pillow** | Image processing | `pip install Pillow` |
-| **pandas** | Data analysis | `pip install pandas` |
-| **requests** | HTTP requests | `pip install requests` |
-| **numpy** | Numerical computing | `pip install numpy` |
-| **matplotlib** | Data visualization | `pip install matplotlib` |
+### 🎯 Query Results
+
+**Return format:**
+```python
+rows = db.execute("SELECT language, COUNT(*) AS n FROM favorites GROUP BY language")
+
+# rows is a list of dictionaries:
+# [
+#   {"language": "Python", "n": 243},
+#   {"language": "C", "n": 59},
+#   {"language": "Scratch", "n": 11}
+# ]
+
+for row in rows:
+    print(f"{row['language']}: {row['n']}")
+```
+
+### 🔄 Complete Example
+
+```python
+from cs50 import SQL
+
+# Connect to database
+db = SQL("sqlite:///favorites.db")
+
+# Get user input
+favorite = input("What's your favorite language? ")
+
+# Query database
+rows = db.execute(
+    "SELECT COUNT(*) AS n FROM favorites WHERE language = ?",
+    favorite
+)
+
+# Display results
+if rows:
+    count = rows[0]["n"]
+    print(f"{count} people prefer {favorite}")
+else:
+    print("No results found")
+```
+
+---
+
+## 🔒 Security Considerations
+
+### ⚠️ Race Conditions
+
+**Definition**: When multiple operations on shared data occur simultaneously, leading to unexpected results.
+
+#### 🏠 Real-World Analogy
+
+**Scenario**: Two roommates checking for milk
+
+```
+Roommate 1: Opens fridge, sees no milk
+Roommate 2: Opens fridge, sees no milk
+Roommate 1: Goes to store, buys milk
+Roommate 2: Goes to store, buys milk
+Result: Two cartons of milk (waste!)
+```
+
+#### 💻 Database Example
+
+**Problem**: Like button incrementation
+
+```python
+# User 1:
+likes = db.execute("SELECT likes FROM posts WHERE id = ?", post_id)[0]["likes"]
+# likes = 100
+
+# User 2:
+likes = db.execute("SELECT likes FROM posts WHERE id = ?", post_id)[0]["likes"]
+# likes = 100
+
+# User 1:
+db.execute("UPDATE posts SET likes = ? WHERE id = ?", likes + 1, post_id)
+# Sets likes to 101
+
+# User 2:
+db.execute("UPDATE posts SET likes = ? WHERE id = ?", likes + 1, post_id)
+# Sets likes to 101 (should be 102!)
+```
+
+**Result**: One like is lost!
+
+#### ✅ Solution: Transactions
+
+**Atomic operations** ensure all-or-nothing execution:
+
+```sql
+BEGIN TRANSACTION;
+    UPDATE posts SET likes = likes + 1 WHERE id = ?;
+COMMIT;
+```
+
+**Alternative SQL solution:**
+```sql
+-- Single atomic operation
+UPDATE posts SET likes = likes + 1 WHERE id = ?;
+```
+
+**🎯 Key Concept**: Use atomic operations or transactions for concurrent access.
+
+### 🛡️ SQL Injection Attacks
+
+**Definition**: Malicious SQL code injected through user input to manipulate database queries.
+
+#### 🎯 The Attack
+
+**Vulnerable Python code:**
+```python
+username = input("Username: ")
+password = input("Password: ")
+
+# DANGEROUS: String interpolation
+query = f"SELECT * FROM users WHERE username = '{username}' AND password = '{password}'"
+rows = db.execute(query)
+```
+
+**Attacker input:**
+```
+Username: malan@harvard.edu' --
+Password: [anything]
+```
+
+**Resulting query:**
+```sql
+SELECT * FROM users 
+WHERE username = 'malan@harvard.edu' -- ' AND password = 'anything'
+```
+
+**💥 Impact**: 
+- `--` comments out the password check
+- Attacker logs in without knowing password!
+
+#### 🎨 Famous Examples
+
+**xkcd Comic: "Little Bobby Tables"**
+```
+Student name: Robert'); DROP TABLE students;--
+```
+
+**License Plate Attack:**
+```
+NULL; DROP TABLE DMV_RECORDS; --
+```
+
+#### ✅ Prevention: Parameterized Queries
+
+**Secure code using placeholders:**
+```python
+username = input("Username: ")
+password = input("Password: ")
+
+# SAFE: Using placeholders
+rows = db.execute(
+    "SELECT * FROM users WHERE username = ? AND password = ?",
+    username,
+    password
+)
+```
+
+**🎯 Key Differences:**
+- ❌ **Never** use f-strings or string concatenation for SQL
+- ✅ **Always** use placeholders (`?`) for user input
+- ✅ Database library **sanitizes** input automatically
+
+#### 🔒 Additional Security Measures
+
+1. **Input Validation**
+   ```python
+   if not username.isalnum():
+       print("Invalid username")
+       exit()
+   ```
+
+2. **Prepared Statements**
+   - Pre-compile SQL queries
+   - Treat user input as data, not code
+
+3. **Least Privilege Principle**
+   - Database users should have minimal permissions
+   - Read-only accounts for queries
+   - Restricted accounts for modifications
+
+---
+
+## 📊 SQL Command Reference
+
+### 🔍 Query Commands
+
+| Command | Purpose | Example |
+|---------|---------|---------|
+| `SELECT` | Retrieve data | `SELECT * FROM table` |
+| `FROM` | Specify table | `FROM favorites` |
+| `WHERE` | Filter rows | `WHERE language = 'Python'` |
+| `GROUP BY` | Aggregate data | `GROUP BY language` |
+| `ORDER BY` | Sort results | `ORDER BY count DESC` |
+| `LIMIT` | Restrict rows | `LIMIT 10` |
+| `JOIN` | Combine tables | `JOIN ratings ON ...` |
+
+### 🔧 Data Manipulation
+
+| Command | Purpose | Example |
+|---------|---------|---------|
+| `INSERT INTO` | Add rows | `INSERT INTO table VALUES (...)` |
+| `UPDATE` | Modify rows | `UPDATE table SET col = val` |
+| `DELETE` | Remove rows | `DELETE FROM table WHERE ...` |
+| `DROP` | Delete table | `DROP TABLE table_name` |
+
+### 📊 Functions
+
+| Function | Purpose | Example |
+|----------|---------|---------|
+| `COUNT()` | Count rows | `COUNT(*)` |
+| `AVG()` | Average value | `AVG(rating)` |
+| `SUM()` | Sum values | `SUM(votes)` |
+| `MIN()` | Minimum value | `MIN(year)` |
+| `MAX()` | Maximum value | `MAX(episodes)` |
+| `DISTINCT` | Unique values | `COUNT(DISTINCT language)` |
+
+---
+
+## 💡 Best Practices
+
+### ✅ Query Optimization
+
+1. **Use indexes** on frequently queried columns
+2. **SELECT specific columns** instead of `*`
+3. **Use LIMIT** when you don't need all results
+4. **Avoid subqueries** when JOINs are clearer
+5. **Create proper indexes** for JOIN conditions
+
+### 🔒 Security
+
+1. **Always use parameterized queries** (placeholders)
+2. **Never trust user input**
+3. **Use transactions** for critical operations
+4. **Implement proper authentication**
+5. **Limit database user permissions**
+
+### 📐 Database Design
+
+1. **Normalize data** (eliminate redundancy)
+2. **Use appropriate data types**
+3. **Define NOT NULL** for required fields
+4. **Create foreign keys** to enforce relationships
+5. **Name tables and columns clearly**
 
 ---
 
 ## 🎯 Key Takeaways
 
-### 1️⃣ **Python's Philosophy: Simplicity**
+### 1️⃣ **SQL is a Specialized Tool**
 
-**The Zen of Python:**
-- Beautiful is better than ugly
-- Simple is better than complex
-- Readable counts
-- There should be one obvious way to do it
+Python is powerful, but SQL is **purpose-built** for databases:
+- More concise queries
+- Better performance
+- Standardized across systems
 
-### 2️⃣ **Major Advantages of Python**
+### 2️⃣ **Database Design Matters**
 
-✅ **Automatic Memory Management** - No `malloc`/`free`  
-✅ **Dynamic Typing** - Variables adapt automatically  
-✅ **Rich Standard Library** - "Batteries included"  
-✅ **Readable Syntax** - Code that looks like English  
-✅ **Rapid Development** - Focus on problem-solving, not boilerplate  
+Good schema design:
+- Eliminates data redundancy
+- Enforces data integrity
+- Improves query performance
+- Scales better
 
-### 3️⃣ **Language Transition Skills**
+### 3️⃣ **Indexes Speed Up Reads**
 
-**🎓 Learning New Languages:**
-- Recognize **patterns** and **similarities**
-- Understand **fundamental concepts** transfer between languages
-- **Google syntax**, focus on **logic**
-- Use **documentation** effectively
+**Trade-off**:
+- ⚡ Faster queries
+- 🐌 Slower writes
+- 💾 More storage
 
-### 4️⃣ **When to Use Python vs C**
+**Use when**: Frequently querying/filtering on a column
 
-| Use Case | Recommended Language | Why |
-|----------|-------------------|-----|
-| **System Programming** | C | Direct hardware control, performance |
-| **Web Development** | Python | Rich frameworks, rapid development |
-| **Data Science** | Python | Excellent libraries (pandas, numpy) |
-| **Embedded Systems** | C | Memory constraints, real-time requirements |
-| **Scripting/Automation** | Python | Quick development, excellent string handling |
+### 4️⃣ **Security is Critical**
 
----
+Two major threats:
+- **Race conditions**: Use transactions
+- **SQL injection**: Use parameterized queries
 
-## ⚡ Performance Considerations
+### 5️⃣ **Language Integration**
 
-### 🏎️ Speed vs Development Time
-
-**Trade-off Analysis:**
-
-| Factor | C | Python |
-|--------|---|--------|
-| **Execution Speed** | ⚡⚡⚡ Very Fast | ⚡⚡ Moderate |
-| **Development Speed** | 🐌 Slow | 🚀 Very Fast |
-| **Memory Usage** | 💾 Minimal | 💾💾 Higher |
-| **Learning Curve** | 📈 Steep | 📈 Gentle |
-
-### 🧮 Floating Point Precision
-
-**Still an issue in Python:**
-
-```python
-result = 1 / 3
-print(f"{result:.50f}")  # Shows imprecision beyond 15-16 digits
-```
-
-**💡 Solution**: Use `decimal` module for high-precision arithmetic when needed.
-
-### 🔢 Integer Overflow
-
-**Not a problem in Python!**
-
-```python
-# This works in Python, would overflow in C
-big_number = 2 ** 1000
-print(big_number)  # Prints huge number successfully
-```
+SQL works alongside other languages:
+- Python for logic
+- SQL for data
+- Best of both worlds!
 
 ---
 
 ## 🎬 Looking Ahead
 
-### Week 7: SQL and Databases
-
-Python makes database operations much easier:
-
-```python
-import sqlite3
-
-conn = sqlite3.connect('database.db')
-cursor = conn.cursor()
-cursor.execute("SELECT * FROM students WHERE name = ?", (name,))
-```
-
 ### Week 8: Web Programming
 
-Python web frameworks like Flask:
+SQL databases power most web applications:
 
 ```python
 from flask import Flask
+from cs50 import SQL
 
 app = Flask(__name__)
+db = SQL("sqlite:///database.db")
 
-@app.route('/')
+@app.route("/")
 def index():
-    return "Hello, World!"
+    rows = db.execute("SELECT * FROM posts ORDER BY timestamp DESC")
+    return render_template("index.html", posts=rows)
 ```
 
----
+### Real-World Applications
 
-## 🎓 Practice Exercises
+**E-commerce:**
+- Product catalogs
+- User accounts
+- Order history
 
-### 🔥 Mario Pyramid
+**Social Media:**
+- User profiles
+- Posts and comments
+- Friend relationships
 
-**Vertical:**
-```python
-from cs50 import get_int
-
-while True:
-    height = get_int("Height: ")
-    if height > 0:
-        break
-
-for i in range(height):
-    print("#")
-```
-
-**Horizontal:**
-```python
-from cs50 import get_int
-
-while True:
-    height = get_int("Height: ")
-    if height > 0:
-        break
-
-for i in range(height):
-    print("#" * (i + 1))
-```
-
-### 📞 Phonebook Search
-
-```python
-people = {
-    "Alice": "+1-617-495-1000",
-    "Bob": "+1-617-495-1001",
-    "Charlie": "+1-617-495-1002"
-}
-
-name = input("Name: ")
-if name in people:
-    print(f"Found: {people[name]}")
-else:
-    print("Not found")
-```
-
----
-
-## 📝 Common Pitfalls and Solutions
-
-### ❌ Common Mistakes
-
-1️⃣ **Forgetting the `f` in f-strings:**
-```python
-name = "David"
-print("Hello, {name}")  # Wrong: prints literal braces
-print(f"Hello, {name}") # Correct: Hello, David
-```
-
-2️⃣ **Inconsistent indentation:**
-```python
-if x > 0:
-    print("Positive")
-  print("This line")  # IndentationError!
-```
-
-3️⃣ **String vs integer addition:**
-```python
-x = input("x: ")  # Returns string "5"
-y = input("y: ")  # Returns string "3"
-print(x + y)      # "53", not 8!
-```
-
-### ✅ Best Practices
-
-1️⃣ **Use meaningful variable names**
-2️⃣ **Be consistent with quotes** (prefer double quotes)
-3️⃣ **Use `main()` function for organization**
-4️⃣ **Handle exceptions appropriately**
-5️⃣ **Use f-strings for formatting**
-
----
-
-## 🌟 Final Thoughts
-
-**Python represents a philosophical shift:**
-- From **"How do I make the computer do this?"**
-- To **"What do I want to accomplish?"**
-
-The language handles the tedious details so you can focus on **solving interesting problems**.
-
-**🎯 Remember**: The goal isn't to memorize every syntax detail, but to understand **programming concepts** that transfer between languages. Python just makes those concepts easier to express and implement.
+**Banking:**
+- Account balances
+- Transaction history
+- Customer data
 
 ---
 
 ## 📚 Additional Resources
 
-- **Official Python Documentation**: [docs.python.org](https://docs.python.org)
-- **Python Package Index (PyPI)**: [pypi.org](https://pypi.org)
-- **CS50 Python Library**: [pypi.org/project/cs50](https://pypi.org/project/cs50)
-- **Python Style Guide (PEP 8)**: [pep8.org](https://pep8.org)
+- **SQLite Documentation**: [sqlite.org](https://sqlite.org)
+- **SQL Tutorial**: [w3schools.com/sql](https://w3schools.com/sql)
+- **Database Design**: Normalization principles
+- **CS50 SQL Library**: [cs50.readthedocs.io](https://cs50.readthedocs.io)
+
+---
+
+## 🎓 Practice Problems
+
+### 🔰 Beginner
+
+1. **Count unique problems** in favorites
+2. **Find all C fans** who like Mario
+3. **Sort languages** alphabetically
+
+### 🔸 Intermediate
+
+4. **Find all shows** with rating > 8.0
+5. **List all actors** in "The Office"
+6. **Count shows per genre**
+
+### 🔥 Advanced
+
+7. **Find common co-stars** of two actors
+8. **Calculate average rating** by genre
+9. **Implement full-text search** with indexes
 
 ---
 
@@ -995,8 +1018,39 @@ The language handles the tedious details so you can focus on **solving interesti
 **Instructor**: David J. Malan  
 **University**: Harvard University  
 **Course**: CS50x 2025  
-**Video**: CS50x 2025 - Lecture 6 - Python
+**Video**: CS50x 2025 - Lecture 7 - SQL
 
 ---
 
-*Made with 🐍 for CS50 students transitioning from C to Python*
+## 📝 SQL vs Python Comparison
+
+**Same Task: Count Favorite Languages**
+
+**Python (14 lines):**
+```python
+import csv
+
+counts = {}
+with open("favorites.csv") as file:
+    reader = csv.DictReader(file)
+    for row in reader:
+        favorite = row["language"]
+        if favorite in counts:
+            counts[favorite] += 1
+        else:
+            counts[favorite] = 1
+
+for language in sorted(counts, key=counts.get, reverse=True):
+    print(f"{language}: {counts[language]}")
+```
+
+**SQL (1 line):**
+```sql
+SELECT language, COUNT(*) AS n FROM favorites GROUP BY language ORDER BY n DESC;
+```
+
+**🎯 Winner**: SQL for database operations!
+
+---
+
+*Made with 🗄️ for CS50 students learning databases and SQL*

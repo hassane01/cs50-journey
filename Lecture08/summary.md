@@ -1,1015 +1,1215 @@
-# 🗄️ CS50 Lecture 7: SQL
+# 🌐 CS50 Lecture 8: HTML, CSS, JavaScript
 
 > **Course**: CS50 - Harvard University's Introduction to Computer Science  
-> **Lecture**: Week 7 - SQL (Structured Query Language)  
-> **Focus**: Databases, data relationships, and efficient data querying
+> **Lecture**: Week 8 - Web Programming  
+> **Focus**: Internet fundamentals, HTML markup, CSS styling, and JavaScript interactivity
 
 ---
 
 ## 🎯 Learning Objectives
 
 By the end of this lecture, you will understand:
-- Flat-file databases vs. relational databases
-- SQL syntax for creating, reading, updating, and deleting data
-- Database schemas, data types, and constraints
-- Primary and foreign keys for data relationships
-- SQL joins and complex queries
-- Database indexes for performance optimization
-- Integrating SQL with Python
-- Security concerns: race conditions and SQL injection attacks
+- How the internet works (TCP/IP, DNS, DHCP, HTTP/HTTPS)
+- HTML structure and semantic tags
+- CSS styling techniques and frameworks
+- JavaScript for dynamic web interactivity
+- DOM manipulation and event handling
+- Form validation with regular expressions
+- Responsive web design with Bootstrap
 
 ---
 
 ## 📑 Table of Contents
 
-1. [Introduction to SQL](#-introduction-to-sql)
-2. [Flat-File Databases](#-flat-file-databases)
-3. [Relational Databases](#-relational-databases)
-4. [SQL Fundamentals](#-sql-fundamentals)
-5. [Database Schema and Design](#-database-schema-and-design)
-6. [Advanced Queries and Joins](#-advanced-queries-and-joins)
-7. [Indexes and Performance](#-indexes-and-performance)
-8. [Python and SQL Integration](#-python-and-sql-integration)
-9. [Security Considerations](#-security-considerations)
+1. [The Internet](#-the-internet)
+2. [TCP/IP Protocol](#-tcpip-protocol)
+3. [DNS and DHCP](#-dns-and-dhcp)
+4. [HTTP/HTTPS](#-httphttps)
+5. [HTML Fundamentals](#-html-fundamentals)
+6. [Regular Expressions](#-regular-expressions)
+7. [CSS Styling](#-css-styling)
+8. [Bootstrap Framework](#-bootstrap-framework)
+9. [JavaScript Programming](#-javascript-programming)
+10. [DOM Manipulation](#-dom-manipulation)
 
 ---
 
-## 🚀 Introduction to SQL
+## 🌍 The Internet
 
-**SQL (Structured Query Language)** is a **domain-specific language** designed specifically for managing and querying data in relational databases.
+### 🔌 What is the Internet?
 
-### 🎯 Why SQL?
+The **Internet** is the underlying infrastructure that connects computers worldwide, enabling data transfer from point A to point B.
 
-**Problem**: Python requires significant code to analyze data:
-- 14+ lines just to count favorite languages
-- Manual dictionary management
-- Explicit sorting logic
-- Time-consuming for simple questions
+**Historical Context:**
+- **1969**: ARPANET connected first few universities (West Coast USA)
+- **Early expansion**: Harvard and others joined (East Coast)
+- **Today**: Billions of interconnected devices worldwide
 
-**Solution**: SQL reduces complex data analysis to single-line queries!
+### 🛣️ Routers
 
-### 📊 CRUD Operations
+**Routers** are specialized computers that direct data packets through the internet.
 
-SQL supports four fundamental operations:
+**Visualization:**
+```
+[Phyllis] → [Router 1] → [Router 2] → [Router 3] → [Brian]
+```
 
-| Operation | SQL Commands | Purpose |
-|-----------|-------------|---------|
-| **C**reate | `CREATE`, `INSERT` | Add data to database |
-| **R**ead | `SELECT` | Retrieve data from database |
-| **U**pdate | `UPDATE` | Modify existing data |
-| **D**elete | `DELETE`, `DROP` | Remove data from database |
+**Key Concepts:**
+- Routers live in **data centers** (large warehouses)
+- Each router decides: **up, down, left, or right?**
+- Multiple paths exist between any two points
+- Dynamic routing based on network congestion
 
 ---
 
-## 📁 Flat-File Databases
+## 📦 TCP/IP Protocol
 
-**Flat-file databases** are the simplest form of data storage using plain text files.
+### 🔢 IP Addresses (Internet Protocol)
 
-### 📋 CSV Format (Comma-Separated Values)
+**Format**: `#.#.#.#` (e.g., `1.2.3.4`)
 
-**Structure:**
-```csv
-Timestamp,language,problem
-10/28/2024 9:45:23,Python,Fiftyville
-10/28/2024 9:46:12,C,Mario
-10/28/2024 9:47:05,Python,"Hello, World"
+**Properties:**
+- Each number ranges from **0-255**
+- **32-bit addresses** (4 bytes)
+- **4 billion possible addresses** (2³²)
+- **IPv4** is current standard
+- **IPv6** (128-bit) supports far more devices
+
+### 📧 The Envelope Analogy
+
+**Virtual envelope structure:**
+```
+┌────────────────────────────┐
+│ From: 5.6.7.8             │ ← Source IP
+│ To: 1.2.3.4               │ ← Destination IP
+│ Port: 443                 │ ← Service type
+│ Sequence: 1 of 4          │ ← Packet order
+├────────────────────────────┤
+│ [Data: Picture of cat]    │
+└────────────────────────────┘
 ```
 
-**Key Features:**
-- ✅ First row contains column headers
-- ✅ Commas separate column values
-- ✅ Quotes protect commas within data
-- ✅ Universal format (Excel, Google Sheets, Numbers)
+### 🔄 TCP (Transmission Control Protocol)
 
-### 🐍 Python CSV Processing
+**TCP adds three critical features:**
 
-#### Basic CSV Reading
-```python
-import csv
-
-with open("favorites.csv", "r") as file:
-    reader = csv.reader(file)
-    next(reader)  # Skip header row
-    
-    for row in reader:
-        print(row[1])  # Print language column
+#### 1️⃣ **Sequence Numbers**
+Ensures packets are reassembled in correct order:
+```
+Packet 1 of 4 → [Quarter of cat image]
+Packet 2 of 4 → [Another quarter]
+Packet 3 of 4 → [Third quarter]
+Packet 4 of 4 → [Final quarter]
 ```
 
-#### Dictionary Reader (More Robust)
-```python
-import csv
+#### 2️⃣ **Acknowledgments**
+Receiver confirms receipt; sender resends if needed
 
-with open("favorites.csv", "r") as file:
-    reader = csv.DictReader(file)
-    
-    for row in reader:
-        print(row["language"])  # Access by column name
+#### 3️⃣ **Port Numbers**
+Identifies which service should handle the request
+
+| Port | Service | Protocol |
+|------|---------|----------|
+| `80` | Web (insecure) | HTTP |
+| `443` | Web (secure) | HTTPS |
+| `25` | Email | SMTP |
+| `53` | Domain lookup | DNS |
+
+### 📊 Packet Structure
+
+**IP Packet Header:**
+```
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|Version| IHL |Type of Service |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|      Source Address          |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|   Destination Address        |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 ```
 
-**🎯 Advantage**: Column order changes won't break your code!
-
-### 📊 Counting with Dictionaries
-
-**Goal**: Count occurrences of each language
-
-```python
-import csv
-
-counts = {}
-
-with open("favorites.csv", "r") as file:
-    reader = csv.DictReader(file)
-    
-    for row in reader:
-        favorite = row["language"]
-        
-        if favorite in counts:
-            counts[favorite] += 1
-        else:
-            counts[favorite] = 1
-
-# Sort by count (descending)
-for language in sorted(counts, key=counts.get, reverse=True):
-    print(f"{language}: {counts[language]}")
+**Complete addressing:**
 ```
-
-**Output:**
+1.2.3.4:443
+└─┬──┘ └┬┘
+  IP   Port
 ```
-Python: 243
-C: 59
-Scratch: 11
-```
-
-### ⚠️ Limitations of Flat-Files
-
-- ❌ No built-in query language
-- ❌ Entire file must be loaded into memory
-- ❌ Inefficient for large datasets
-- ❌ No data relationships
-- ❌ Manual sorting and filtering
 
 ---
 
-## 🗄️ Relational Databases
+## 🗺️ DNS and DHCP
 
-**Relational databases** organize data into **tables** with **rows** and **columns**, enabling relationships between different data entities.
+### 🔍 DNS (Domain Name System)
 
-### 🔧 SQLite Setup
+**Purpose**: Translates human-friendly domain names to IP addresses
 
-**SQLite** is a lightweight, file-based SQL database.
+**Example:**
+```
+google.com → 142.250.80.46
+cs50.ai → [IP address]
+```
 
-#### Creating a Database
+**DNS Structure:**
+```
+┌──────────────────────┐
+│   Domain Name   │ IP Address  │
+├──────────────────────┤
+│ google.com      │ 142.250.80.46│
+│ harvard.edu     │ 23.185.0.4   │
+│ cs50.ai         │ [IP address] │
+└──────────────────────┘
+```
+
+**How it works:**
+1. Your computer checks **local cache**
+2. If not found, asks **ISP's DNS server**
+3. ISP may ask **other DNS servers** recursively
+4. **Root servers** know about `.com`, `.org`, `.edu`, etc.
+5. Answer is **cached** for future use
+
+**Domain Name Anatomy:**
+```
+www.example.com
+│   │       │
+│   │       └─ TLD (Top-Level Domain)
+│   └───────── Domain Name
+└───────────── Host Name (subdomain)
+```
+
+**TLDs (Top-Level Domains):**
+- **.com** - Commercial (originally)
+- **.org** - Organization
+- **.edu** - Educational
+- **.gov** - Government
+- **.us, .uk, .jp** - Country codes (2 characters)
+- **.ai, .tv, .io** - Repurposed country codes
+
+### ⚙️ DHCP (Dynamic Host Configuration Protocol)
+
+**Purpose**: Automatically assigns IP addresses to devices
+
+**What DHCP provides:**
+1. **Your IP address** (e.g., `192.168.1.100`)
+2. **DNS server address** (where to look up domains)
+3. **Default gateway** (router to send data through)
+
+**Process:**
+```
+[Device boots up]
+     ↓
+"What's my IP address?"
+     ↓
+[DHCP Server responds]
+     ↓
+"Use 192.168.1.100"
+```
+
+---
+
+## 🌐 HTTP/HTTPS
+
+### 📨 HTTP (Hypertext Transfer Protocol)
+
+**Protocol for requesting web pages**
+
+#### GET Request
+
+**Client sends:**
+```http
+GET / HTTP/2
+Host: www.harvard.edu
+```
+
+**Server responds:**
+```http
+HTTP/2 200 OK
+Content-Type: text/html
+
+<!DOCTYPE html>
+<html>
+...
+</html>
+```
+
+#### POST Request
+
+**Used for sending data (forms, uploads):**
+```http
+POST /login HTTP/2
+Host: www.example.com
+Content-Type: application/x-www-form-urlencoded
+
+username=david&password=secret
+```
+
+### 🔒 HTTPS (HTTP Secure)
+
+**Encrypted version of HTTP**
+- Uses **port 443** instead of 80
+- **Scrambles data** so only recipient can read
+- **Preferred standard** for all websites
+
+### 📊 HTTP Status Codes
+
+| Code | Meaning | Example |
+|------|---------|---------|
+| `200` | OK | Page found successfully |
+| `301` | Moved Permanently | Site changed address |
+| `302` | Found (Temporary Redirect) | Temporary move |
+| `304` | Not Modified | Use cached version |
+| `401` | Unauthorized | Login required |
+| `403` | Forbidden | No access permission |
+| `404` | Not Found | Page doesn't exist |
+| `418` | I'm a Teapot | Easter egg (joke) |
+| `500` | Internal Server Error | **Your fault as developer!** |
+| `503` | Service Unavailable | Server down |
+
+### 🔗 URL Structure
+
+**Complete URL breakdown:**
+```
+https://www.example.com:443/folder/file.html?key=value#section
+│─┬─│  │─────┬──────│ │─┬┘ │───┬───│  │──┬───│ │───┬──│  │──┬──│
+  │   │      │        │  │   │   │     │   │     │   │      │   │
+  │   │      │        │  │   │   │     │   │     │   │      │   └─ Fragment
+  │   │      │        │  │   │   │     │   │     │   └──────────── Query string
+  │   │      │        │  │   │   │     │   └─────────────────────── File
+  │   │      │        │  │   │   └─────────────────────────────────── Path
+  │   │      │        │  │   └──────────────────────────────────────── Port
+  │   │      │        │  └──────────────────────────────────────────── TLD
+  │   │      └─────────────────────────────────────────────────────────── Domain
+  │   └────────────────────────────────────────────────────────────────── Subdomain
+  └────────────────────────────────────────────────────────────────────── Protocol
+```
+
+**Testing URLs:**
 ```bash
-sqlite3 favorites.db
+# Check headers
+curl -I https://www.harvard.edu/
+
+# Follow redirects
+curl -I https://harvard.edu
 ```
 
-#### Importing CSV Data
-```sql
-.mode csv
-.import favorites.csv favorites
+---
+
+## 📝 HTML Fundamentals
+
+### 🏗️ Basic Structure
+
+**Minimal HTML document:**
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>hello, title</title>
+</head>
+<body>
+    hello, body
+</body>
+</html>
 ```
 
-#### Viewing the Schema
-```sql
-.schema
+**Key elements:**
+- `<!DOCTYPE html>` - Declares HTML5
+- `<html lang="en">` - Root element with language
+- `<head>` - Metadata (title, styles, scripts)
+- `<body>` - Visible content
+
+### 📊 Document Hierarchy
+
+```
+html
+├── head
+│   └── title
+└── body
+    ├── header
+    ├── main
+    │   ├── p
+    │   ├── img
+    │   └── ...
+    └── footer
+```
+
+### 📄 Text Elements
+
+#### Paragraphs
+```html
+<p>
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+</p>
+```
+
+#### Headings
+```html
+<h1>Main Title</h1>      <!-- Largest -->
+<h2>Section Title</h2>
+<h3>Subsection</h3>
+<h4>Sub-subsection</h4>
+<h5>Minor heading</h5>
+<h6>Smallest heading</h6> <!-- Smallest -->
+```
+
+### 📋 Lists
+
+#### Unordered List
+```html
+<ul>
+    <li>First item</li>
+    <li>Second item</li>
+    <li>Third item</li>
+</ul>
 ```
 
 **Output:**
-```sql
-CREATE TABLE favorites(
-  "Timestamp" TEXT,
-  "language" TEXT,
-  "problem" TEXT
-);
-```
+- First item
+- Second item
+- Third item
 
-### 📊 Basic SQL Queries
-
-#### Select All Data
-```sql
-SELECT * FROM favorites;
-```
-
-#### Select Specific Column
-```sql
-SELECT language FROM favorites;
-```
-
-#### Count Total Rows
-```sql
-SELECT COUNT(*) FROM favorites;
-```
-
-#### Count Unique Values
-```sql
-SELECT COUNT(DISTINCT language) FROM favorites;
-```
-
-**Output:** `3` (Scratch, C, Python)
-
----
-
-## 🔍 SQL Fundamentals
-
-### 🎯 WHERE Clause (Filtering)
-
-**Filter by single condition:**
-```sql
-SELECT COUNT(*) 
-FROM favorites 
-WHERE language = 'C';
-```
-
-**Multiple conditions (AND):**
-```sql
-SELECT COUNT(*) 
-FROM favorites 
-WHERE language = 'C' AND problem = 'Mario';
-```
-
-**Multiple conditions (OR):**
-```sql
-SELECT COUNT(*) 
-FROM favorites 
-WHERE language = 'C' 
-  AND (problem = 'Mario' OR problem = 'Scratch');
-```
-
-### 🔤 Pattern Matching with LIKE
-
-**Wildcard operator:** `%` matches any characters
-
-```sql
-SELECT COUNT(*) 
-FROM favorites 
-WHERE problem LIKE 'Hello, %';
-```
-
-**Matches:**
-- "Hello, World"
-- "Hello, It's Me"
-- Any string starting with "Hello, "
-
-### 📊 GROUP BY (Aggregation)
-
-**Count occurrences of each language:**
-```sql
-SELECT language, COUNT(*) 
-FROM favorites 
-GROUP BY language;
+#### Ordered List
+```html
+<ol>
+    <li>First step</li>
+    <li>Second step</li>
+    <li>Third step</li>
+</ol>
 ```
 
 **Output:**
-```
-C|59
-Python|243
-Scratch|11
-```
+1. First step
+2. Second step
+3. Third step
 
-### 🔢 ORDER BY (Sorting)
+### 📊 Tables
 
-**Sort by count (descending):**
-```sql
-SELECT language, COUNT(*) AS n
-FROM favorites
-GROUP BY language
-ORDER BY n DESC;
-```
-
-**Using alias `AS` for readability:**
-- `AS n` creates an alias for `COUNT(*)`
-- Can reference alias in `ORDER BY` clause
-
-### 🎯 LIMIT (Restricting Results)
-
-**Get top result only:**
-```sql
-SELECT language, COUNT(*) AS n
-FROM favorites
-GROUP BY language
-ORDER BY n DESC
-LIMIT 1;
+```html
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Number</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Alice</td>
+            <td>+1-617-495-1000</td>
+        </tr>
+        <tr>
+            <td>Bob</td>
+            <td>+1-949-468-2750</td>
+        </tr>
+    </tbody>
+</table>
 ```
 
-**Output:**
-```
-Python|243
-```
+**Elements:**
+- `<table>` - Container
+- `<thead>` - Header section
+- `<tbody>` - Body section
+- `<tr>` - Table row
+- `<th>` - Header cell (bold)
+- `<td>` - Data cell
 
-**🎉 Achievement**: Reduced 14 lines of Python to 1 SQL query!
+### 🖼️ Media Elements
 
----
-
-## 🏗️ Database Schema and Design
-
-### 📐 Schema Definition
-
-A **schema** defines the structure of your database:
-- Tables and their relationships
-- Column names and data types
-- Constraints and keys
-
-### 📊 SQLite Data Types
-
-| Type | Description | Examples |
-|------|-------------|----------|
-| `INTEGER` | Whole numbers | `1`, `42`, `-5` |
-| `NUMERIC` | Generic numbers, dates | `2024`, dates, years |
-| `REAL` | Floating-point | `3.14`, `98.6` |
-| `TEXT` | Strings | `"Hello"`, `"Python"` |
-| `BLOB` | Binary data | Images, files |
-
-### 🔒 Constraints
-
-**Constraints** enforce data integrity:
-
-| Constraint | Purpose | Example |
-|------------|---------|---------|
-| `NOT NULL` | Column must have a value | `title TEXT NOT NULL` |
-| `UNIQUE` | All values must be distinct | `email TEXT UNIQUE` |
-| `PRIMARY KEY` | Unique identifier for rows | `id INTEGER PRIMARY KEY` |
-| `FOREIGN KEY` | Links to another table | `show_id INTEGER REFERENCES shows(id)` |
-
-### 🗝️ Primary and Foreign Keys
-
-#### Primary Key
-**Uniquely identifies** each row in a table.
-
-```sql
-CREATE TABLE shows (
-    id INTEGER PRIMARY KEY,
-    title TEXT NOT NULL,
-    year NUMERIC,
-    episodes INTEGER
-);
+#### Images
+```html
+<img alt="Photo of bridge" src="bridge.png">
 ```
 
-#### Foreign Key
-**Establishes relationships** between tables.
+**Attributes:**
+- `src` - Image file path
+- `alt` - Alternative text (accessibility)
 
-```sql
-CREATE TABLE ratings (
-    show_id INTEGER NOT NULL REFERENCES shows(id),
-    rating REAL NOT NULL,
-    votes INTEGER NOT NULL
-);
+#### Videos
+```html
+<video controls muted>
+    <source src="video.mp4" type="video/mp4">
+</video>
 ```
 
-**🔗 Relationship**: Each rating belongs to exactly one show.
+**Attributes:**
+- `controls` - Show play/pause buttons
+- `muted` - Start without sound
+- `type` - Video format
 
-### 🎭 Database Design Example: IMDb
+### 🔗 Links
 
-**Shows Database Structure:**
-
-```
-┌─────────────┐
-│   SHOWS     │
-├─────────────┤
-│ id (PK)     │
-│ title       │
-│ year        │
-│ episodes    │
-└─────────────┘
-       ↑
-       │ (one-to-one)
-       │
-┌─────────────┐
-│  RATINGS    │
-├─────────────┤
-│ show_id(FK) │
-│ rating      │
-│ votes       │
-└─────────────┘
-
-       ↑
-       │ (one-to-many)
-       │
-┌─────────────┐
-│   GENRES    │
-├─────────────┤
-│ show_id(FK) │
-│ genre       │
-└─────────────┘
+```html
+<a href="https://www.harvard.edu">Visit Harvard</a>
 ```
 
-**Relationship Types:**
-1. **One-to-One**: Each show has one rating
-2. **One-to-Many**: Each show can have multiple genres
-3. **Many-to-Many**: Shows and actors (requires join table)
+**Attributes:**
+- `href` - Destination URL
+- Creates clickable text
 
-### 🔗 Many-to-Many Relationships
+### 📝 Forms
 
-**Problem**: A show has multiple stars; an actor stars in multiple shows.
-
-**Solution**: **Join table** (intersection table)
-
-```sql
-CREATE TABLE people (
-    id INTEGER PRIMARY KEY,
-    name TEXT NOT NULL,
-    birth NUMERIC
-);
-
-CREATE TABLE stars (
-    show_id INTEGER NOT NULL REFERENCES shows(id),
-    person_id INTEGER NOT NULL REFERENCES people(id)
-);
+#### Basic Form
+```html
+<form action="https://www.google.com/search" method="get">
+    <input name="q" type="search">
+    <input type="submit" value="Search">
+</form>
 ```
 
-**Visual:**
+#### Advanced Form
+```html
+<form action="https://www.google.com/search" method="get">
+    <input 
+        autocomplete="off" 
+        autofocus 
+        name="q" 
+        placeholder="Query" 
+        type="search">
+    <button>Google Search</button>
+</form>
 ```
-┌─────────┐         ┌─────────┐         ┌─────────┐
-│  SHOWS  │────────>│  STARS  │<────────│  PEOPLE │
-│         │         │         │         │         │
-│ id (PK) │         │show_id  │         │ id (PK) │
-│ title   │         │person_id│         │ name    │
-└─────────┘         └─────────┘         └─────────┘
+
+**Input Attributes:**
+- `autocomplete="off"` - Disable suggestions
+- `autofocus` - Focus on page load
+- `placeholder` - Hint text
+- `type` - Input type (text, email, password, etc.)
+
+### 🎨 Semantic Tags
+
+**Modern HTML5 semantic elements:**
+```html
+<header>Site navigation</header>
+<main>
+    <article>
+        <section>Content section</section>
+    </article>
+</main>
+<footer>Copyright info</footer>
+```
+
+**Benefits:**
+- Better **accessibility**
+- Improved **SEO**
+- Clearer **document structure**
+
+### 💬 Comments
+
+```html
+<!-- This is a comment -->
+<!-- 
+    Multi-line
+    comment
+-->
 ```
 
 ---
 
-## 🔄 Data Manipulation
+## 🔍 Regular Expressions
 
-### ➕ INSERT (Create)
+**Regular expressions (regex)** validate input patterns.
 
-**Add new row:**
-```sql
-INSERT INTO favorites (language, problem) 
-VALUES ('SQL', 'Fiftyville');
+### 📧 Email Validation
+
+#### Basic Type
+```html
+<input type="email" name="email" placeholder="Email">
 ```
 
-**⚠️ Result**: `Timestamp` will be `NULL` (no value provided)
-
-### 🗑️ DELETE (Remove)
-
-**Delete specific rows:**
-```sql
-DELETE FROM favorites 
-WHERE Timestamp IS NULL;
+#### Pattern Matching
+```html
+<input 
+    type="email" 
+    name="email" 
+    pattern=".+@.+\.edu" 
+    placeholder="Email">
 ```
 
-**⚠️ WARNING**: Without `WHERE`, deletes **ALL** rows!
-
-### 🔄 UPDATE (Modify)
-
-**Update specific rows:**
-```sql
-UPDATE favorites 
-SET language = 'SQL', problem = 'Fiftyville'
-WHERE language = 'C' AND problem = 'Mario';
-```
-
-**⚠️ DANGER**: Without `WHERE`, updates **ALL** rows!
-
-```sql
--- DESTRUCTIVE: Updates ALL rows!
-UPDATE favorites 
-SET language = 'SQL';
-```
-
----
-
-## 🔗 Advanced Queries and Joins
-
-### 🎯 Subqueries (Nested Queries)
-
-**Find shows with rating ≥ 6.0:**
-```sql
-SELECT title 
-FROM shows 
-WHERE id IN (
-    SELECT show_id 
-    FROM ratings 
-    WHERE rating >= 6.0
-);
-```
-
-**Find genres for "Catweazle":**
-```sql
-SELECT genre 
-FROM genres 
-WHERE show_id = (
-    SELECT id 
-    FROM shows 
-    WHERE title = 'Catweazle'
-);
-```
-
-### 🔗 JOIN Operations
-
-**Basic JOIN syntax:**
-```sql
-SELECT title, rating 
-FROM shows 
-JOIN ratings ON shows.id = ratings.show_id
-WHERE rating >= 6.0
-LIMIT 10;
-```
-
-**Multiple JOINs:**
-```sql
-SELECT title, genre 
-FROM shows
-JOIN genres ON shows.id = genres.show_id
-WHERE title = 'Catweazle';
-```
-
-### 🎭 Complex Query: Find All Shows for an Actor
-
-#### Method 1: Nested Queries
-```sql
-SELECT title 
-FROM shows 
-WHERE id IN (
-    SELECT show_id 
-    FROM stars 
-    WHERE person_id = (
-        SELECT id 
-        FROM people 
-        WHERE name = 'Steve Carell'
-    )
-);
-```
-
-#### Method 2: Explicit JOINs (Preferred)
-```sql
-SELECT title 
-FROM shows
-JOIN stars ON shows.id = stars.show_id
-JOIN people ON stars.person_id = people.id
-WHERE people.name = 'Steve Carell';
-```
-
-#### Method 3: Implicit JOINs (Older Style)
-```sql
-SELECT title 
-FROM shows, stars, people
-WHERE shows.id = stars.show_id
-  AND stars.person_id = people.id
-  AND people.name = 'Steve Carell';
-```
-
-**🎯 Best Practice**: Use explicit `JOIN` syntax for clarity.
-
----
-
-## ⚡ Indexes and Performance
-
-### 🐢 The Performance Problem
-
-**Without indexes:**
-```sql
-SELECT title FROM shows WHERE title = 'The Office';
-```
-⏱️ **Time**: ~0.2 seconds (scanning 150,000+ rows)
-
-### 📚 What Are Indexes?
-
-**Indexes** are data structures (typically **B-trees**) that speed up data retrieval.
-
-**Analogy**: Like a book's index pointing to page numbers
-
-### 🚀 Creating Indexes
-
-**Syntax:**
-```sql
-CREATE INDEX index_name ON table_name (column_name);
-```
-
-**Examples:**
-```sql
-CREATE INDEX title_index ON shows (title);
-CREATE INDEX name_index ON people (name);
-CREATE INDEX person_id_index ON stars (person_id);
-```
-
-### ⚡ Performance Comparison
-
-**Before index:**
-```sql
-.timer ON
-SELECT * FROM shows WHERE title = 'The Office';
-```
-⏱️ **Time**: 0.2 seconds
-
-**After index:**
-```sql
-CREATE INDEX title_index ON shows (title);
-SELECT * FROM shows WHERE title = 'The Office';
-```
-⏱️ **Time**: 0.001 seconds (200× faster!)
-
-### ⚖️ Index Trade-offs
-
-| Pros | Cons |
-|------|------|
-| ✅ Much faster `SELECT` queries | ❌ More storage space |
-| ✅ Speeds up `WHERE` clauses | ❌ Slower `INSERT` operations |
-| ✅ Speeds up `JOIN` operations | ❌ Slower `UPDATE` operations |
-| ✅ Speeds up `ORDER BY` | ❌ Slower `DELETE` operations |
-
-**🎯 Best Practice**: Create indexes on columns frequently used in:
-- `WHERE` clauses
-- `JOIN` conditions
-- `ORDER BY` clauses
-
----
-
-## 🐍 Python and SQL Integration
-
-### 🔗 CS50 SQL Library
-
-**Connecting to database:**
-```python
-from cs50 import SQL
-
-# Connect to SQLite database
-db = SQL("sqlite:///favorites.db")
-```
-
-### 📊 Executing Queries
-
-**Basic query:**
-```python
-favorite = input("Favorite: ")
-
-# Execute query with placeholder
-rows = db.execute(
-    "SELECT COUNT(*) AS n FROM favorites WHERE language = ?",
-    favorite
-)
-
-# Access results
-if rows:
-    row = rows[0]
-    print(row["n"])
-```
-
-**🔑 Key Concepts:**
-- `db.execute()` returns a **list of dictionaries**
-- Each dictionary represents a row
-- Keys are column names
-- `?` is a **placeholder** for safe parameter substitution
-
-### 🎯 Query Results
-
-**Return format:**
-```python
-rows = db.execute("SELECT language, COUNT(*) AS n FROM favorites GROUP BY language")
-
-# rows is a list of dictionaries:
-# [
-#   {"language": "Python", "n": 243},
-#   {"language": "C", "n": 59},
-#   {"language": "Scratch", "n": 11}
-# ]
-
-for row in rows:
-    print(f"{row['language']}: {row['n']}")
-```
-
-### 🔄 Complete Example
-
-```python
-from cs50 import SQL
-
-# Connect to database
-db = SQL("sqlite:///favorites.db")
-
-# Get user input
-favorite = input("What's your favorite language? ")
-
-# Query database
-rows = db.execute(
-    "SELECT COUNT(*) AS n FROM favorites WHERE language = ?",
-    favorite
-)
-
-# Display results
-if rows:
-    count = rows[0]["n"]
-    print(f"{count} people prefer {favorite}")
-else:
-    print("No results found")
-```
-
----
-
-## 🔒 Security Considerations
-
-### ⚠️ Race Conditions
-
-**Definition**: When multiple operations on shared data occur simultaneously, leading to unexpected results.
-
-#### 🏠 Real-World Analogy
-
-**Scenario**: Two roommates checking for milk
-
-```
-Roommate 1: Opens fridge, sees no milk
-Roommate 2: Opens fridge, sees no milk
-Roommate 1: Goes to store, buys milk
-Roommate 2: Goes to store, buys milk
-Result: Two cartons of milk (waste!)
-```
-
-#### 💻 Database Example
-
-**Problem**: Like button incrementation
-
-```python
-# User 1:
-likes = db.execute("SELECT likes FROM posts WHERE id = ?", post_id)[0]["likes"]
-# likes = 100
-
-# User 2:
-likes = db.execute("SELECT likes FROM posts WHERE id = ?", post_id)[0]["likes"]
-# likes = 100
-
-# User 1:
-db.execute("UPDATE posts SET likes = ? WHERE id = ?", likes + 1, post_id)
-# Sets likes to 101
-
-# User 2:
-db.execute("UPDATE posts SET likes = ? WHERE id = ?", likes + 1, post_id)
-# Sets likes to 101 (should be 102!)
-```
-
-**Result**: One like is lost!
-
-#### ✅ Solution: Transactions
-
-**Atomic operations** ensure all-or-nothing execution:
-
-```sql
-BEGIN TRANSACTION;
-    UPDATE posts SET likes = likes + 1 WHERE id = ?;
-COMMIT;
-```
-
-**Alternative SQL solution:**
-```sql
--- Single atomic operation
-UPDATE posts SET likes = likes + 1 WHERE id = ?;
-```
-
-**🎯 Key Concept**: Use atomic operations or transactions for concurrent access.
-
-### 🛡️ SQL Injection Attacks
-
-**Definition**: Malicious SQL code injected through user input to manipulate database queries.
-
-#### 🎯 The Attack
-
-**Vulnerable Python code:**
-```python
-username = input("Username: ")
-password = input("Password: ")
-
-# DANGEROUS: String interpolation
-query = f"SELECT * FROM users WHERE username = '{username}' AND password = '{password}'"
-rows = db.execute(query)
-```
-
-**Attacker input:**
-```
-Username: malan@harvard.edu' --
-Password: [anything]
-```
-
-**Resulting query:**
-```sql
-SELECT * FROM users 
-WHERE username = 'malan@harvard.edu' -- ' AND password = 'anything'
-```
-
-**💥 Impact**: 
-- `--` comments out the password check
-- Attacker logs in without knowing password!
-
-#### 🎨 Famous Examples
-
-**xkcd Comic: "Little Bobby Tables"**
-```
-Student name: Robert'); DROP TABLE students;--
-```
-
-**License Plate Attack:**
-```
-NULL; DROP TABLE DMV_RECORDS; --
-```
-
-#### ✅ Prevention: Parameterized Queries
-
-**Secure code using placeholders:**
-```python
-username = input("Username: ")
-password = input("Password: ")
-
-# SAFE: Using placeholders
-rows = db.execute(
-    "SELECT * FROM users WHERE username = ? AND password = ?",
-    username,
-    password
-)
-```
-
-**🎯 Key Differences:**
-- ❌ **Never** use f-strings or string concatenation for SQL
-- ✅ **Always** use placeholders (`?`) for user input
-- ✅ Database library **sanitizes** input automatically
-
-#### 🔒 Additional Security Measures
-
-1. **Input Validation**
-   ```python
-   if not username.isalnum():
-       print("Invalid username")
-       exit()
-   ```
-
-2. **Prepared Statements**
-   - Pre-compile SQL queries
-   - Treat user input as data, not code
-
-3. **Least Privilege Principle**
-   - Database users should have minimal permissions
-   - Read-only accounts for queries
-   - Restricted accounts for modifications
-
----
-
-## 📊 SQL Command Reference
-
-### 🔍 Query Commands
-
-| Command | Purpose | Example |
+**Pattern breakdown:**
+- `.+` - One or more characters
+- `@` - Literal @ symbol
+- `\.` - Literal period (escaped)
+- `edu` - Must end with .edu
+
+### 🔤 Common Regex Patterns
+
+| Pattern | Meaning | Example |
 |---------|---------|---------|
-| `SELECT` | Retrieve data | `SELECT * FROM table` |
-| `FROM` | Specify table | `FROM favorites` |
-| `WHERE` | Filter rows | `WHERE language = 'Python'` |
-| `GROUP BY` | Aggregate data | `GROUP BY language` |
-| `ORDER BY` | Sort results | `ORDER BY count DESC` |
-| `LIMIT` | Restrict rows | `LIMIT 10` |
-| `JOIN` | Combine tables | `JOIN ratings ON ...` |
+| `.` | Any character | `a.c` matches "abc", "a9c" |
+| `*` | Zero or more | `ab*c` matches "ac", "abc", "abbc" |
+| `+` | One or more | `ab+c` matches "abc", "abbc" |
+| `?` | Zero or one | `ab?c` matches "ac", "abc" |
+| `\d` | Any digit | `\d\d\d` matches "123" |
+| `\w` | Word character | `\w+` matches "hello" |
+| `[abc]` | Any of a, b, c | `[aeiou]` matches vowels |
+| `^` | Start of string | `^Hello` must start with "Hello" |
+| `$` | End of string | `\.com$` must end with ".com" |
 
-### 🔧 Data Manipulation
+---
 
-| Command | Purpose | Example |
-|---------|---------|---------|
-| `INSERT INTO` | Add rows | `INSERT INTO table VALUES (...)` |
-| `UPDATE` | Modify rows | `UPDATE table SET col = val` |
-| `DELETE` | Remove rows | `DELETE FROM table WHERE ...` |
-| `DROP` | Delete table | `DROP TABLE table_name` |
+## 🎨 CSS Styling
 
-### 📊 Functions
+### 🖌️ What is CSS?
 
-| Function | Purpose | Example |
-|----------|---------|---------|
-| `COUNT()` | Count rows | `COUNT(*)` |
-| `AVG()` | Average value | `AVG(rating)` |
-| `SUM()` | Sum values | `SUM(votes)` |
-| `MIN()` | Minimum value | `MIN(year)` |
-| `MAX()` | Maximum value | `MAX(episodes)` |
-| `DISTINCT` | Unique values | `COUNT(DISTINCT language)` |
+**CSS (Cascading Style Sheets)** controls the visual presentation of HTML.
+
+### 📍 Three Ways to Apply CSS
+
+#### 1️⃣ Inline Styles
+```html
+<p style="font-size: large; text-align: center;">
+    John Harvard
+</p>
+```
+
+**❌ Problem**: Repetitive and hard to maintain
+
+#### 2️⃣ Internal Stylesheet
+```html
+<head>
+    <style>
+        p {
+            font-size: large;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <p>John Harvard</p>
+</body>
+```
+
+#### 3️⃣ External Stylesheet (Best Practice)
+```html
+<!-- index.html -->
+<head>
+    <link href="style.css" rel="stylesheet">
+</head>
+```
+
+```css
+/* style.css */
+p {
+    font-size: large;
+    text-align: center;
+}
+```
+
+### 🎯 CSS Selectors
+
+#### Type Selector
+```css
+p {
+    color: blue;
+}
+```
+
+#### Class Selector
+```html
+<p class="centered">Text</p>
+```
+
+```css
+.centered {
+    text-align: center;
+}
+```
+
+#### ID Selector
+```html
+<div id="header">Header</div>
+```
+
+```css
+#header {
+    background-color: navy;
+}
+```
+
+### 📦 CSS Properties
+
+#### Text Styling
+```css
+.text-style {
+    font-size: 16px;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    text-align: center;
+    color: #333;
+}
+```
+
+#### Layout
+```css
+.box {
+    width: 300px;
+    height: 200px;
+    margin: 20px;
+    padding: 10px;
+    border: 1px solid black;
+}
+```
+
+#### Display Properties
+```css
+.hidden {
+    display: none;          /* Completely hidden */
+    visibility: hidden;     /* Hidden but space reserved */
+}
+```
+
+### 🌈 Colors
+
+```css
+/* Named colors */
+color: red;
+
+/* Hexadecimal */
+color: #FF0000;
+
+/* RGB */
+color: rgb(255, 0, 0);
+
+/* RGBA (with transparency) */
+color: rgba(255, 0, 0, 0.5);
+```
+
+### 🔄 Cascading Behavior
+
+**CSS rules cascade from parent to children:**
+```html
+<body style="text-align: center">
+    <div>This is centered</div>
+    <div>This is also centered</div>
+</body>
+```
+
+---
+
+## 🚀 Bootstrap Framework
+
+### 📦 What is Bootstrap?
+
+**Bootstrap** is a CSS framework that provides pre-styled components for rapid web development.
+
+### 🔗 Including Bootstrap
+
+```html
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+```
+
+### 📊 Bootstrap Table
+
+**Before Bootstrap:**
+```html
+<table>
+    <tr>
+        <th>Name</th>
+        <th>Number</th>
+    </tr>
+    <tr>
+        <td>Alice</td>
+        <td>+1-617-495-1000</td>
+    </tr>
+</table>
+```
+
+**With Bootstrap:**
+```html
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Number</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Alice</td>
+            <td>+1-617-495-1000</td>
+        </tr>
+    </tbody>
+</table>
+```
+
+### 🎨 Common Bootstrap Classes
+
+| Class | Purpose |
+|-------|---------|
+| `.container` | Fixed-width container |
+| `.container-fluid` | Full-width container |
+| `.row` | Grid row |
+| `.col` | Grid column |
+| `.btn` | Button styling |
+| `.btn-primary` | Primary button (blue) |
+| `.btn-danger` | Danger button (red) |
+| `.form-control` | Form input styling |
+| `.table` | Table styling |
+| `.nav` | Navigation bar |
+| `.card` | Card component |
+
+### 🎯 Bootstrap Grid System
+
+```html
+<div class="container">
+    <div class="row">
+        <div class="col">Column 1</div>
+        <div class="col">Column 2</div>
+        <div class="col">Column 3</div>
+    </div>
+</div>
+```
+
+### 🔘 Bootstrap Buttons
+
+```html
+<button class="btn btn-primary">Primary</button>
+<button class="btn btn-secondary">Secondary</button>
+<button class="btn btn-success">Success</button>
+<button class="btn btn-danger">Danger</button>
+```
+
+---
+
+## ⚡ JavaScript Programming
+
+### 🎯 What is JavaScript?
+
+**JavaScript** is a programming language that adds **interactivity** to web pages.
+
+### 📝 Basic Syntax
+
+#### Variables
+```javascript
+let name = "David";
+const age = 30;
+var oldStyle = "avoid";  // Avoid using var
+```
+
+#### Data Types
+```javascript
+let number = 42;              // Number
+let text = "Hello";           // String
+let flag = true;              // Boolean
+let nothing = null;           // Null
+let unknown;                  // Undefined
+let list = [1, 2, 3];        // Array
+let obj = {key: "value"};    // Object
+```
+
+#### Conditionals
+```javascript
+if (x > 0) {
+    console.log("Positive");
+} else if (x < 0) {
+    console.log("Negative");
+} else {
+    console.log("Zero");
+}
+```
+
+#### Loops
+```javascript
+// For loop
+for (let i = 0; i < 10; i++) {
+    console.log(i);
+}
+
+// While loop
+while (condition) {
+    // code
+}
+
+// For-of loop
+for (let item of array) {
+    console.log(item);
+}
+```
+
+#### Functions
+```javascript
+function greet(name) {
+    return `Hello, ${name}!`;
+}
+
+// Arrow function
+const greet = (name) => `Hello, ${name}!`;
+```
+
+### 🎯 Simple Alert Example
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>
+        function greet() {
+            alert('Hello, ' + document.querySelector('#name').value);
+        }
+    </script>
+    <title>Hello</title>
+</head>
+<body>
+    <form onsubmit="greet(); return false;">
+        <input id="name" placeholder="Name" type="text">
+        <input type="submit">
+    </form>
+</body>
+</html>
+```
+
+**❌ Problem**: Mixing HTML and JavaScript is poor design!
+
+---
+
+## 🔧 DOM Manipulation
+
+### 🌳 The DOM (Document Object Model)
+
+The **DOM** is a tree representation of HTML that JavaScript can manipulate.
+
+```
+document
+  └── html
+      ├── head
+      │   └── title
+      └── body
+          ├── h1
+          └── p
+```
+
+### 🎯 Selecting Elements
+
+```javascript
+// By ID
+let element = document.querySelector('#myId');
+
+// By class
+let elements = document.querySelectorAll('.myClass');
+
+// By tag
+let paragraphs = document.querySelectorAll('p');
+```
+
+### ✏️ Modifying Content
+
+```javascript
+// Change text
+element.innerHTML = 'New text';
+
+// Change attribute
+element.setAttribute('src', 'image.png');
+
+// Change style
+element.style.color = 'red';
+element.style.backgroundColor = 'blue';
+```
+
+### 🎧 Event Listeners
+
+#### DOMContentLoaded
+```javascript
+document.addEventListener('DOMContentLoaded', function() {
+    // Code runs after page loads
+    console.log('Page is ready!');
+});
+```
+
+#### Form Submit
+```javascript
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelector('form').addEventListener('submit', function(e) {
+        alert('Hello, ' + document.querySelector('#name').value);
+        e.preventDefault();  // Prevent form submission
+    });
+});
+```
+
+#### Key Events
+```javascript
+let input = document.querySelector('input');
+input.addEventListener('keyup', function(event) {
+    console.log('User typed:', input.value);
+});
+```
+
+**Common events:**
+- `click` - Mouse click
+- `submit` - Form submission
+- `keyup` - Key released
+- `keydown` - Key pressed
+- `change` - Input value changed
+- `load` - Page loaded
+- `mouseover` - Mouse enters element
+
+### 🎨 Live Greeting Example
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            let input = document.querySelector('input');
+            input.addEventListener('keyup', function() {
+                let output = document.querySelector('p');
+                if (input.value) {
+                    output.innerHTML = `Hello, ${input.value}`;
+                } else {
+                    output.innerHTML = 'Hello, whoever you are';
+                }
+            });
+        });
+    </script>
+    <title>Hello</title>
+</head>
+<body>
+    <form>
+        <input autocomplete="off" autofocus placeholder="Name" type="text">
+    </form>
+    <p></p>
+</body>
+</html>
+```
+
+**🎯 Key Concept**: Updates happen **in real-time** without page reload!
+
+### 🎨 Background Color Changer
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Background</title>
+</head>
+<body>
+    <button id="red">R</button>
+    <button id="green">G</button>
+    <button id="blue">B</button>
+    
+    <script>
+        let body = document.querySelector('body');
+        
+        document.querySelector('#red').addEventListener('click', function() {
+            body.style.backgroundColor = 'red';
+        });
+        
+        document.querySelector('#green').addEventListener('click', function() {
+            body.style.backgroundColor = 'green';
+        });
+        
+        document.querySelector('#blue').addEventListener('click', function() {
+            body.style.backgroundColor = 'blue';
+        });
+    </script>
+</body>
+</html>
+```
+
+### 🔄 Blinking Text
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>
+        function blink() {
+            let body = document.querySelector('body');
+            if (body.style.visibility == 'hidden') {
+                body.style.visibility = 'visible';
+            } else {
+                body.style.visibility = 'hidden';
+            }
+        }
+        
+        // Blink every 500ms
+        window.setInterval(blink, 500);
+    </script>
+    <title>Blink</title>
+</head>
+<body>
+    Hello, world
+</body>
+</html>
+```
+
+**Functions:**
+- `setInterval(function, delay)` - Repeat function every delay ms
+- `setTimeout(function, delay)` - Run function once after delay ms
+
+### 🔍 Autocomplete Example
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Autocomplete</title>
+</head>
+<body>
+    <input autocomplete="off" autofocus placeholder="Query" type="text">
+    <ul></ul>
+    
+    <script src="large.js"></script>  <!-- Array of words -->
+    <script>
+        let input = document.querySelector('input');
+        
+        input.addEventListener('keyup', function() {
+            let html = '';
+            if (input.value) {
+                for (word of WORDS) {
+                    if (word.startsWith(input.value)) {
+                        html += `<li>${word}</li>`;
+                    }
+                }
+            }
+            document.querySelector('ul').innerHTML = html;
+        });
+    </script>
+</body>
+</html>
+```
+
+**🎯 Demonstrates:**
+- Real-time filtering
+- Dynamic list generation
+- Template literals (`${variable}`)
 
 ---
 
 ## 💡 Best Practices
 
-### ✅ Query Optimization
+### ✅ HTML Best Practices
 
-1. **Use indexes** on frequently queried columns
-2. **SELECT specific columns** instead of `*`
-3. **Use LIMIT** when you don't need all results
-4. **Avoid subqueries** when JOINs are clearer
-5. **Create proper indexes** for JOIN conditions
+1. **Use semantic tags** (`<header>`, `<main>`, `<footer>`)
+2. **Always include `alt` attributes** for images
+3. **Proper indentation** for readability
+4. **Close all tags** properly
+5. **Use lowercase** for tags and attributes
 
-### 🔒 Security
+### ✅ CSS Best Practices
 
-1. **Always use parameterized queries** (placeholders)
-2. **Never trust user input**
-3. **Use transactions** for critical operations
-4. **Implement proper authentication**
-5. **Limit database user permissions**
+1. **External stylesheets** over inline styles
+2. **Use classes** over IDs for styling
+3. **Keep selectors simple** and maintainable
+4. **Group related properties** together
+5. **Comment complex styles**
 
-### 📐 Database Design
+### ✅ JavaScript Best Practices
 
-1. **Normalize data** (eliminate redundancy)
-2. **Use appropriate data types**
-3. **Define NOT NULL** for required fields
-4. **Create foreign keys** to enforce relationships
-5. **Name tables and columns clearly**
+1. **Wait for DOMContentLoaded** before manipulating DOM
+2. **Use `let` and `const`** instead of `var`
+3. **Prevent default** behavior when needed
+4. **Separate JavaScript** from HTML
+5. **Use event delegation** for dynamic content
 
 ---
 
 ## 🎯 Key Takeaways
 
-### 1️⃣ **SQL is a Specialized Tool**
+### 1️⃣ **The Internet is Layered**
 
-Python is powerful, but SQL is **purpose-built** for databases:
-- More concise queries
-- Better performance
-- Standardized across systems
+**Physical Layer**: Cables, routers, data centers  
+**Network Layer**: IP addresses, TCP packets  
+**Application Layer**: HTTP, HTTPS, web browsers
 
-### 2️⃣ **Database Design Matters**
+### 2️⃣ **HTML is Structure, CSS is Style, JavaScript is Behavior**
 
-Good schema design:
-- Eliminates data redundancy
-- Enforces data integrity
-- Improves query performance
-- Scales better
+| Technology | Purpose | Example |
+|------------|---------|---------|
+| **HTML** | Content structure | `<p>Hello</p>` |
+| **CSS** | Visual styling | `p { color: blue; }` |
+| **JavaScript** | Interactivity | `alert('Hello');` |
 
-### 3️⃣ **Indexes Speed Up Reads**
+### 3️⃣ **Separation of Concerns**
 
-**Trade-off**:
-- ⚡ Faster queries
-- 🐌 Slower writes
-- 💾 More storage
+**Bad:**
+```html
+<p style="color: red;" onclick="alert('Hi')">Text</p>
+```
 
-**Use when**: Frequently querying/filtering on a column
+**Good:**
+```html
+<!-- HTML -->
+<p class="highlight">Text</p>
 
-### 4️⃣ **Security is Critical**
+<!-- CSS -->
+.highlight { color: red; }
 
-Two major threats:
-- **Race conditions**: Use transactions
-- **SQL injection**: Use parameterized queries
+<!-- JavaScript -->
+document.querySelector('.highlight').addEventListener('click', ...);
+```
 
-### 5️⃣ **Language Integration**
+### 4️⃣ **The DOM is Dynamic**
 
-SQL works alongside other languages:
-- Python for logic
-- SQL for data
-- Best of both worlds!
+JavaScript can:
+- ✅ Read element properties
+- ✅ Modify content in real-time
+- ✅ Respond to user actions
+- ✅ Update without page reload
+
+### 5️⃣ **Security Matters**
+
+- ✅ Always use **HTTPS** (not HTTP)
+- ✅ Validate user input (regex patterns)
+- ✅ **Never trust** client-side validation alone
+- ✅ Server-side validation is essential
 
 ---
 
 ## 🎬 Looking Ahead
 
-### Week 8: Web Programming
+### Week 9: Flask (Python Web Framework)
 
-SQL databases power most web applications:
-
+**Connecting the pieces:**
 ```python
-from flask import Flask
-from cs50 import SQL
+from flask import Flask, render_template
 
 app = Flask(__name__)
-db = SQL("sqlite:///database.db")
 
-@app.route("/")
+@app.route('/')
 def index():
-    rows = db.execute("SELECT * FROM posts ORDER BY timestamp DESC")
-    return render_template("index.html", posts=rows)
+    return render_template('index.html')
 ```
 
-### Real-World Applications
-
-**E-commerce:**
-- Product catalogs
-- User accounts
-- Order history
-
-**Social Media:**
-- User profiles
-- Posts and comments
-- Friend relationships
-
-**Banking:**
-- Account balances
-- Transaction history
-- Customer data
+**What you'll learn:**
+- Server-side programming
+- Dynamic content generation
+- Database integration
+- User authentication
+- Session management
 
 ---
 
 ## 📚 Additional Resources
 
-- **SQLite Documentation**: [sqlite.org](https://sqlite.org)
-- **SQL Tutorial**: [w3schools.com/sql](https://w3schools.com/sql)
-- **Database Design**: Normalization principles
-- **CS50 SQL Library**: [cs50.readthedocs.io](https://cs50.readthedocs.io)
+- **MDN Web Docs**: [developer.mozilla.org](https://developer.mozilla.org)
+- **Bootstrap Documentation**: [getbootstrap.com](https://getbootstrap.com)
+- **JavaScript Reference**: [javascript.info](https://javascript.info)
+- **Regex Tester**: [regex101.com](https://regex101.com)
+- **Can I Use**: [caniuse.com](https://caniuse.com) (Browser compatibility)
 
 ---
 
-## 🎓 Practice Problems
+## 🎓 Practice Exercises
 
 ### 🔰 Beginner
 
-1. **Count unique problems** in favorites
-2. **Find all C fans** who like Mario
-3. **Sort languages** alphabetically
+1. **Create a personal homepage** with header, main content, and footer
+2. **Style a form** using CSS classes
+3. **Add a button** that changes text color
 
 ### 🔸 Intermediate
 
-4. **Find all shows** with rating > 8.0
-5. **List all actors** in "The Office"
-6. **Count shows per genre**
+4. **Build a calculator** with JavaScript
+5. **Create a to-do list** with add/remove functionality
+6. **Implement form validation** with regex
 
 ### 🔥 Advanced
 
-7. **Find common co-stars** of two actors
-8. **Calculate average rating** by genre
-9. **Implement full-text search** with indexes
+7. **Build an autocomplete search**
+8. **Create a photo gallery** with modal popups
+9. **Implement a single-page app** with dynamic content loading
 
 ---
 
@@ -1018,39 +1218,60 @@ def index():
 **Instructor**: David J. Malan  
 **University**: Harvard University  
 **Course**: CS50x 2025  
-**Video**: CS50x 2025 - Lecture 7 - SQL
+**Video**: CS50x 2025 - Lecture 8 - HTML, CSS, JavaScript
 
 ---
 
-## 📝 SQL vs Python Comparison
+## 📝 Quick Reference
 
-**Same Task: Count Favorite Languages**
+### HTML Cheat Sheet
 
-**Python (14 lines):**
-```python
-import csv
-
-counts = {}
-with open("favorites.csv") as file:
-    reader = csv.DictReader(file)
-    for row in reader:
-        favorite = row["language"]
-        if favorite in counts:
-            counts[favorite] += 1
-        else:
-            counts[favorite] = 1
-
-for language in sorted(counts, key=counts.get, reverse=True):
-    print(f"{language}: {counts[language]}")
+```html
+<!-- Document structure -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Page Title</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Content here -->
+    <script src="script.js"></script>
+</body>
+</html>
 ```
 
-**SQL (1 line):**
-```sql
-SELECT language, COUNT(*) AS n FROM favorites GROUP BY language ORDER BY n DESC;
+### CSS Cheat Sheet
+
+```css
+/* Selector types */
+element { }      /* Tag */
+.class { }       /* Class */
+#id { }          /* ID */
+parent > child { } /* Direct child */
+element:hover { }  /* Pseudo-class */
 ```
 
-**🎯 Winner**: SQL for database operations!
+### JavaScript Cheat Sheet
+
+```javascript
+// DOM Selection
+document.querySelector('#id');
+document.querySelectorAll('.class');
+
+// Event Listener
+element.addEventListener('event', function(e) {
+    // Handle event
+    e.preventDefault();
+});
+
+// DOM Manipulation
+element.innerHTML = 'text';
+element.style.property = 'value';
+element.classList.add('class');
+```
 
 ---
 
-*Made with 🗄️ for CS50 students learning databases and SQL*
+*Made with 🌐 for CS50 students learning web development*
