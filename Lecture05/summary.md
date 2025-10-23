@@ -1,215 +1,54 @@
-# 📚 CS50 Lecture 5: Data Structures
+# CS50x 2025 – Lecture 5: Data Structures
 
-> **Course**: CS50 - Harvard University's Introduction to Computer Science  
-> **Lecture**: Week 5 - Data Structures  
-> **Focus**: Memory organization, dynamic data structures, and algorithm efficiency
+## Overview
 
----
-
-## 🎯 Learning Objectives
-
-By the end of this lecture, you will understand:
-- Abstract Data Types vs. Data Structures
-- Memory efficiency and trade-offs
-- Dynamic memory allocation strategies
-- Core data structures: Linked Lists, Trees, Hash Tables, and Tries
-- Time and space complexity considerations
+Lecture 5 marks the **final week of C programming** in CS50x and focuses on one of the most crucial topics in computer science: **data structures**.  
+Data structures are **ways of organizing data in memory** to make it easier and faster to work with.  
+This lecture ties together the key ideas from previous weeks — **memory**, **pointers**, and **structs** — to show how complex data can be managed efficiently.
 
 ---
 
-## 📑 Table of Contents
+## 1. What Are Data Structures?
 
-1. [Abstract Data Types](#-abstract-data-types)
-   - [Queues (FIFO)](#queues-fifo)
-   - [Stacks (LIFO)](#stacks-lifo)
-2. [The Problem with Arrays](#-the-problem-with-arrays)
-3. [Resizing Arrays](#-resizing-arrays)
-4. [Linked Lists](#-linked-lists)
-5. [Binary Search Trees](#-binary-search-trees)
-6. [Hash Tables](#-hash-tables)
-7. [Tries](#-tries)
-8. [Performance Comparison](#-performance-comparison)
+A **data structure** is a way to store and organize data so that it can be accessed and modified efficiently.  
+Think of them as **containers** for related pieces of information.
 
----
+### Common Data Structures:
+- **Arrays** – fixed-size collections of elements.
+- **Linked Lists** – dynamic collections connected via pointers.
+- **Stacks** – LIFO (Last In, First Out) systems.
+- **Queues** – FIFO (First In, First Out) systems.
+- **Trees** – hierarchical structures.
+- **Hash Tables** – store data for fast lookup using keys.
 
-## 🔄 Abstract Data Types
-
-**Abstract Data Types (ADTs)** are high-level descriptions of data structures that define operations and properties, independent of implementation details.
-
-### Queues (FIFO)
-
-> **FIFO**: First In, First Out
-
-**Real-world examples**: 
-- 🎬 Movie theater lines
-- 🖨️ Printer job queues
-- 🍔 Restaurant ordering systems
-
-**Operations**:
-- **Enqueue**: Add element to the back of the queue
-- **Dequeue**: Remove element from the front of the queue
-
-**Properties**:
-- ✅ Fair and equitable (first come, first served)
-- ✅ Preserves order of arrival
-
-**C Implementation Structure**:
-```c
-typedef struct {
-    person people[CAPACITY];
-    int size;
-} queue;
-```
-
-**Key Learning**: Queues ensure fairness by processing items in the exact order they arrive.
+Each structure offers **different trade-offs** between memory usage, speed, and flexibility.
 
 ---
 
-### Stacks (LIFO)
+## 2. Review of Memory Concepts
 
-> **LIFO**: Last In, First Out
+Before diving into data structures, CS50 revisits **memory management**, since all data structures rely on how memory is used.
 
-**Real-world examples**: 
-- 📧 Email inbox (most recent on top)
-- 🍽️ Stack of plates in a cafeteria
-- 👕 Pile of laundry
+### Key Concepts:
+- **Pointers**: store memory addresses of other variables.
+- **malloc()**: dynamically allocates memory on the heap.
+- **free()**: releases allocated memory to prevent leaks.
+- **Segmentation Faults**: occur when accessing memory incorrectly.
 
-**Operations**:
-- **Push**: Add element to the top of the stack
-- **Pop**: Remove element from the top of the stack
-
-**Properties**:
-- ⚠️ Not equitable (most recent items processed first)
-- ⚠️ Older items may get "buried"
-
-**C Implementation Structure**:
-```c
-typedef struct {
-    person people[CAPACITY];
-    int size;
-} stack;
-```
-
-**Key Learning**: The only difference between queue and stack implementation is *where* you add/remove elements in the underlying array.
+Understanding these is critical because **dynamic data structures** (like linked lists or trees) require careful control over memory allocation.
 
 ---
 
-## ⚠️ The Problem with Arrays
+## 3. Linked Lists
 
-Arrays are **contiguous blocks of memory** with a **fixed size** determined at creation.
+### The Problem with Arrays:
+Arrays have a **fixed size**.  
+If you want to store more elements than expected, you must create a **new, larger array** and copy the old elements — inefficient.
 
-### Visual Representation
+### The Linked List Solution:
+A **linked list** stores data in a sequence of **nodes** connected by **pointers**.
 
-```
-[1][2][3] ← Our array
-         [H][e][l][l][o][ ][w][o][r][l][d][\0] ← Another variable
-         ↑ Can't insert [4] here!
-```
-
-### Key Issues:
-
-1. **❌ Fixed Capacity**: Must decide size in advance
-2. **❌ No Room to Grow**: Adjacent memory might be occupied
-3. **❌ Wasteful Over-allocation**: Allocating extra space wastes memory
-4. **❌ Expensive Resizing**: Copying entire array is O(n) operation
-
----
-
-## 🔄 Resizing Arrays
-
-### The Process
-
-1. **Allocate** new, larger chunk of memory
-2. **Copy** all elements from old to new array
-3. **Add** new element(s)
-4. **Free** old memory
-
-### Code Example
-
-```c
-#include <stdio.h>
-#include <stdlib.h>
-
-int main(void) {
-    // Initial allocation
-    int *list = malloc(3 * sizeof(int));
-    if (list == NULL) {
-        return 1;
-    }
-    
-    list[0] = 1;
-    list[1] = 2;
-    list[2] = 3;
-    
-    // --- Time passes, need more space ---
-    
-    // Allocate new array
-    int *tmp = malloc(4 * sizeof(int));
-    if (tmp == NULL) {
-        free(list);  // Don't leak memory!
-        return 1;
-    }
-    
-    // Copy old values
-    for (int i = 0; i < 3; i++) {
-        tmp[i] = list[i];
-    }
-    
-    // Add new value
-    tmp[3] = 4;
-    
-    // Clean up
-    free(list);
-    list = tmp;
-    
-    // Use list...
-    for (int i = 0; i < 4; i++) {
-        printf("%i\n", list[i]);
-    }
-    
-    free(list);
-    return 0;
-}
-```
-
-### 📊 Performance Analysis
-
-- **Time Complexity**: O(n) - must copy n elements
-- **Space Complexity**: 2n temporarily (old + new)
-- **Problem**: Gets exponentially worse with repeated resizing
-
-### Alternative: `realloc()`
-
-```c
-int *tmp = realloc(list, 4 * sizeof(int));
-if (tmp == NULL) {
-    free(list);
-    return 1;
-}
-list = tmp;
-list[3] = 4;
-```
-
-**Advantage**: If memory is available adjacent to original allocation, `realloc()` may not need to copy!
-
----
-
-## 🔗 Linked Lists
-
-A **linked list** uses pointers to connect non-contiguous chunks of memory, eliminating the need for resizing.
-
-### Structure
-
-```
-[1]──→[2]──→[3]──→NULL
-```
-
-Each element (node) contains:
-- **Data** (e.g., an integer)
-- **Pointer** to the next node
-
-### Node Definition
-
+Each **node** contains:
 ```c
 typedef struct node {
     int number;
@@ -217,436 +56,242 @@ typedef struct node {
 } node;
 ```
 
-**Note**: The `struct node` must be used for the `next` pointer because C reads top-to-bottom.
+- `number` – stores the data.
+- `next` – pointer to the next node in the list.
 
-### Pointer Syntax
-
-```c
-// Dereferencing and accessing member
-(*n).number = 1;
-
-// Arrow operator (shorthand)
-n->number = 1;  // Equivalent to above
+### Visualization:
+```
+[10 | *] → [20 | *] → [30 | NULL]
 ```
 
-### Building a Linked List
+### Benefits:
+- **Dynamic size**: can grow or shrink easily.
+- **Efficient insertion**: no need to shift elements.
 
-#### 1️⃣ Initialize Empty List
+### Drawbacks:
+- **No random access**: must traverse sequentially.
+- **Extra memory**: each node stores a pointer.
 
+---
+
+## 4. Building a Linked List (Example)
+
+### 1. Create the First Node:
 ```c
 node *list = NULL;
-```
-
-#### 2️⃣ Create First Node
-
-```c
 node *n = malloc(sizeof(node));
-if (n == NULL) {
-    return 1;
-}
-
-n->number = 1;
-n->next = NULL;
-
-list = n;  // Point list to first node
-```
-
-#### 3️⃣ Prepend (Insert at Beginning)
-
-```c
-node *n = malloc(sizeof(node));
-if (n == NULL) {
-    return 1;
-}
-
-n->number = 2;
-n->next = list;  // New node points to current head
-list = n;        // Update head to new node
-```
-
-**Time Complexity**: O(1) - constant time!
-
-#### 4️⃣ Append (Insert at End)
-
-```c
-node *n = malloc(sizeof(node));
-if (n == NULL) {
-    return 1;
-}
-
-n->number = 4;
-n->next = NULL;
-
-if (list == NULL) {
-    list = n;  // Empty list
-} else {
-    // Traverse to end
-    node *ptr = list;
-    while (ptr->next != NULL) {
-        ptr = ptr->next;
-    }
-    ptr->next = n;
-}
-```
-
-**Time Complexity**: O(n) - must traverse entire list
-
-#### 5️⃣ Insert in Sorted Order
-
-```c
-node *n = malloc(sizeof(node));
-if (n == NULL) {
-    return 1;
-}
-
-n->number = value;
-n->next = NULL;
-
-// Empty list or insert at beginning
-if (list == NULL || value < list->number) {
-    n->next = list;
+if (n != NULL) {
+    n->number = 1;
+    n->next = NULL;
     list = n;
-} else {
-    // Find insertion point
-    node *ptr = list;
-    while (ptr->next != NULL && ptr->next->number < value) {
-        ptr = ptr->next;
-    }
-    n->next = ptr->next;
-    ptr->next = n;
 }
 ```
 
-**Time Complexity**: O(n) - worst case traverse entire list
+### 2. Add Another Node:
+```c
+n = malloc(sizeof(node));
+if (n != NULL) {
+    n->number = 2;
+    n->next = NULL;
+    list->next = n;
+}
+```
 
-### ⚖️ Trade-offs
+Now `list` points to a sequence of nodes:
+```
+[1] → [2] → NULL
+```
 
-| Feature | Arrays | Linked Lists |
-|---------|--------|-------------|
-| **Memory** | Contiguous | Non-contiguous |
-| **Size** | Fixed | Dynamic |
-| **Insert at beginning** | O(n) | O(1) |
-| **Search** | O(log n) with binary search | O(n) |
-| **Random access** | O(1) | O(n) |
-| **Memory overhead** | None | Pointers (extra space) |
+### 3. Traversing the List:
+```c
+for (node *tmp = list; tmp != NULL; tmp = tmp->next)
+    printf("%i\n", tmp->number);
+```
 
-**Key Insight**: Linked lists trade **space** (extra pointers) for **time** (no resizing needed).
+### 4. Freeing the List:
+```c
+while (list != NULL) {
+    node *tmp = list->next;
+    free(list);
+    list = tmp;
+}
+```
+Freeing prevents **memory leaks**.
 
 ---
 
-## 🌳 Binary Search Trees
+## 5. Searching in a Linked List
 
-**Goal**: Combine the best of arrays (fast search) and linked lists (dynamic growth).
-
-### Structure
-
-```
-       4
-      / \
-     2   6
-    / \ / \
-   1  3 5  7
-```
-
-### Properties
-
-- Each node has **at most two children** (left and right)
-- **Left subtree**: All values < parent
-- **Right subtree**: All values > parent
-- **Recursive**: Each subtree is itself a BST
-
-### Node Definition
-
+To find a specific value:
 ```c
-typedef struct node {
-    int number;
-    struct node *left;
-    struct node *right;
-} node;
-```
-
-### Search Algorithm (Recursive)
-
-```c
-bool search(node *tree, int number) {
-    if (tree == NULL) {
-        return false;  // Not found
-    } else if (number < tree->number) {
-        return search(tree->left, number);
-    } else if (number > tree->number) {
-        return search(tree->right, number);
-    } else {
-        return true;  // Found!
+bool search(node *list, int target) {
+    for (node *tmp = list; tmp != NULL; tmp = tmp->next) {
+        if (tmp->number == target) return true;
     }
+    return false;
 }
 ```
 
-### 📊 Performance
-
-- **Best/Average Case**: O(log n) - eliminates half the tree at each step
-- **Worst Case**: O(n) - degenerates into a linked list if unbalanced
-
-### ⚠️ The Balancing Problem
-
-**Bad insertion order** (e.g., 1, 2, 3, 4, 5):
-```
-1
- \
-  2
-   \
-    3
-     \
-      4
-       \
-        5
-```
-This is effectively a linked list! Search becomes O(n).
-
-**Solution**: Self-balancing trees (AVL, Red-Black) - advanced topic.
+### Time Complexity:
+- **O(n)**: must check each element one by one.
 
 ---
 
-## 🗂️ Hash Tables
+## 6. Abstraction with Data Structures
 
-**Goal**: Achieve O(1) constant-time operations.
+Instead of manually creating structures, we can **abstract** operations:
+- **Insert()**
+- **Delete()**
+- **Search()**
+- **Print()**
 
-### Concept
+This improves readability and reuse.
 
-A **hash table** combines:
-- **Array**: Fast indexed access
-- **Linked Lists**: Handle collisions
+---
 
-### Structure
+## 7. Hash Tables
 
-```
-Index 0: [Alice] → [Anna] → NULL
-Index 1: [Bob] → NULL
-Index 2: [Charlie] → [Chris] → NULL
-...
-Index 25: [Zelda] → NULL
-```
+A **hash table** combines **arrays** and **linked lists** for faster lookups.
 
-### Hash Function Example
-
-```c
-// Simple hash: first letter
-unsigned int hash(const char *word) {
-    if (isupper(word[0])) {
-        return word[0] - 'A';  // 0-25
-    } else if (islower(word[0])) {
-        return word[0] - 'a';  // 0-25
-    }
-    return 0;
-}
-```
-
-### Node Structure
-
-```c
-typedef struct node {
-    char name[LENGTH + 1];
-    char number[LENGTH + 1];
-    struct node *next;
-} node;
-
-node *table[26];  // Array of linked list heads
-```
-
-### 📊 Performance
-
-- **Best Case**: O(1) - no collisions, direct access
-- **Worst Case**: O(n) - all items hash to same bucket
-- **Average Case**: O(n/k) where k = number of buckets
-
-### Trade-off
-
-**More buckets** → Fewer collisions → Faster access → More memory
+### Structure:
+- Each array element (called a *bucket*) stores a **linked list**.
+- A **hash function** determines where to store each value.
 
 Example:
-- 26 buckets (A-Z): Moderate performance
-- 17,576 buckets (AAA-ZZZ): Better performance, 676× more memory
-- Infinite buckets: O(1) guaranteed, infinite memory ❌
-
-**Key Insight**: Hash tables are widely used because they offer *practical* O(1) performance with reasonable memory usage.
-
----
-
-## 🌲 Tries
-
-**Trie** (pronounced "try"): A tree of arrays, optimized for string keys.
-
-### Structure
-
-```
-Root Array [A][B][C]...[Z]
-            ↓
-            [A][B][C]...[Z]  (for words starting with 'A')
-                 ↓
-                 [A][B][C]...[Z]  (for words starting with 'AB')
-```
-
-### Example: Storing "Toad", "Toadette", "Tom"
-
-```
-        [T]
-         ↓
-        [O]
-         ↓
-        [A][M]
-         ↓   ↓
-        [D] (word)
-         ↓
-        [E]
-         ↓
-        [T]
-         ↓
-        [T]
-         ↓
-        [E] (word)
-```
-
-### Node Structure
-
 ```c
-typedef struct node {
-    char *number;           // Or bool is_word
-    struct node *children[26];  // One for each letter
-} node;
+int hash(string word) {
+    return toupper(word[0]) - 'A';
+}
 ```
 
-### 📊 Performance
+If “Alice” hashes to bucket 0 and “Bob” hashes to bucket 1, then:
+```
+Bucket[0]: Alice → NULL
+Bucket[1]: Bob → NULL
+```
 
-- **Search/Insert/Delete**: O(k) where k = length of key
-- Since k is bounded (e.g., max word length ~45 letters), this is effectively **O(1)**
+### Advantages:
+- Faster lookups: ideally **O(1)**.
+- Good for large datasets (like dictionaries).
 
-### ⚖️ Trade-off
-
-**Pros**:
-- ✅ Incredibly fast lookups
-- ✅ No collisions
-- ✅ Effectively constant time
-
-**Cons**:
-- ❌ **Enormous memory usage**
-- ❌ Many null pointers (wasted space)
-
-**Example**: Storing just "Toad" requires:
-- 1 root array (26 pointers)
-- 1 'T' array (26 pointers)
-- 1 'O' array (26 pointers)
-- 1 'A' array (26 pointers)
-- 1 'D' array (26 pointers)
-- **Total**: 130 pointers, most are NULL!
+### Disadvantages:
+- **Collisions** can occur when multiple items hash to the same bucket.
+- Requires careful hash function design.
 
 ---
 
-## 📊 Performance Comparison
+## 8. Tries (Prefix Trees)
 
-| Data Structure | Search | Insert (unsorted) | Insert (sorted) | Delete | Space |
-|----------------|--------|-------------------|-----------------|--------|-------|
-| **Array** | O(log n)* | O(1)** | O(n) | O(n) | Minimal |
-| **Linked List** | O(n) | O(1) at head | O(n) | O(n) | Pointers |
-| **Binary Search Tree** | O(log n)*** | O(log n)*** | O(log n)*** | O(log n)*** | Pointers |
-| **Hash Table** | O(1)**** | O(1)**** | N/A | O(1)**** | Moderate |
-| **Trie** | O(k) | O(k) | O(k) | O(k) | Very High |
+A **Trie** is a **tree-like structure** used for **storing words or prefixes**, like in a dictionary.
 
-*With binary search  
-**Insert at end  
-***If balanced  
-****Average case; O(n) worst case  
-k = length of key
+Each node represents a **character**, and paths represent **words**.
 
----
+### Example:
+For the words `cat`, `car`, and `dog`:
 
-## 💡 Key Takeaways
+```
+(root)
+ ├── c
+ │    └── a
+ │         ├── t
+ │         └── r
+ └── d
+      └── o
+           └── g
+```
 
-### 1️⃣ **Trade-offs are Everywhere**
-
-There is no "best" data structure - only trade-offs:
-- **Time vs. Space**: Tries are fast but memory-hungry
-- **Simplicity vs. Performance**: Arrays are simple but inflexible
-- **Worst-case vs. Average-case**: Hash tables are usually fast, but not always
-
-### 2️⃣ **Memory is Not Free**
-
-Every data structure has hidden costs:
-- Linked lists: Extra pointers
-- Hash tables: Empty buckets
-- Tries: Massive arrays of mostly NULL pointers
-
-### 3️⃣ **Implementation Matters**
-
-The same ADT can be implemented differently:
-- Queues and stacks can both use arrays
-- Dictionaries can be arrays, linked lists, hash tables, or tries
-- Choice depends on use case
-
-### 4️⃣ **Real-World Example**
-
-**Sweetgreen Salad Pickup**: Orders organized by first letter of name
-- This is a **hash table**!
-- Fast O(1) average lookup
-- Simple hash function (first letter)
-- Collisions handled by scanning shelf
+### Benefits:
+- Efficient prefix searches (e.g., autocomplete).
+- Commonly used in spell-checkers and search engines.
 
 ---
 
-## 🔧 Practical Recommendations
+## 9. Stacks and Queues
 
-### When to Use Each Data Structure:
+### Stack
+- **LIFO** (Last In, First Out)
+- Think of a stack of plates.
+- Operations:
+  - `push()` – add an item.
+  - `pop()` – remove the last added item.
 
-| Use Case | Recommended Structure |
-|----------|----------------------|
-| Fixed-size list | **Array** |
-| Frequent insertions at beginning | **Linked List** |
-| Need sorted data + fast search | **Binary Search Tree** |
-| Dictionary/map with fast lookup | **Hash Table** |
-| Autocomplete, spell-check | **Trie** |
-| Recent items priority | **Stack** |
-| Fair ordering (tickets, tasks) | **Queue** |
+### Queue
+- **FIFO** (First In, First Out)
+- Think of a waiting line.
+- Operations:
+  - `enqueue()` – add an item.
+  - `dequeue()` – remove the oldest item.
 
----
-
-## 🎓 Looking Ahead
-
-### Week 6: Python
-
-Higher-level languages like Python **abstract away** these implementation details:
-- Python's `list` handles resizing automatically
-- Python's `dict` is a hash table under the hood
-- You focus on *what* to do, not *how* to do it
-
-**But understanding C data structures helps you**:
-- Choose the right Python data structure
-- Understand performance implications
-- Debug memory issues
-- Optimize bottlenecks
+Both can be implemented using **arrays or linked lists**.
 
 ---
 
-## 📚 Additional Resources
+## 10. Trees
 
-- **CS50 Manual Pages**: `man malloc`, `man free`
-- **Visualizations**: [visualgo.net](https://visualgo.net)
-- **Practice**: CS50 Problem Set 5 (Speller)
+A **tree** is a hierarchical structure made of **nodes** connected by edges.
 
----
+### Basic Terms:
+- **Root**: top node.
+- **Parent / Child**: relationships between nodes.
+- **Leaf**: node with no children.
 
-## 🎬 Lecture Credits
+### Binary Search Tree (BST)
+Each node has:
+- A **value**.
+- A **left child** (values smaller).
+- A **right child** (values larger).
 
-**Instructor**: David J. Malan  
-**University**: Harvard University  
-**Course**: CS50x 2024  
-**Special Thanks**: Shannon Duvall (Elon University) for "Jack Learns the Facts" video
-
----
-
-## 📝 Notes
-
-This summary is based on CS50 Lecture 5 (2024). The lecture covers fundamental concepts that remain consistent across programming languages and are essential for technical interviews and real-world software development.
-
-**Remember**: The best programmers don't just know *how* to implement these structures - they know *when* to use each one.
+This allows efficient searching:
+- **O(log n)** on average.
 
 ---
 
-*Made with 💙 for CS50 students learning data structures*
+## 11. Why Data Structures Matter
+
+Choosing the right data structure determines:
+- How fast your program runs.
+- How efficiently it uses memory.
+- How easy it is to modify and scale.
+
+### Summary of Trade-Offs
+
+| Data Structure | Access | Search | Insert | Delete | Memory |
+|----------------|--------|--------|--------|--------|---------|
+| Array | O(1) | O(n) | O(n) | O(n) | Low |
+| Linked List | O(n) | O(n) | O(1) | O(1) | Medium |
+| Hash Table | O(1) | O(1) | O(1) | O(1) | High |
+| Tree (BST) | O(log n) | O(log n) | O(log n) | O(log n) | Medium |
+
+---
+
+## 12. Takeaways
+
+- **Memory understanding** (malloc, free, pointers) is essential.
+- **Linked lists** introduce dynamic data management.
+- **Hash tables and tries** make searching faster.
+- **Stacks, queues, and trees** model real-world problems.
+- **Efficiency and abstraction** are key to scalable programming.
+
+---
+
+## 13. CS50 Problem Set Connection
+
+This lecture ties into **Problem Set 5**, which focuses on:
+- Implementing a **dictionary** using a **hash table**.
+- Managing memory carefully.
+- Measuring **lookup time** efficiency.
+
+You’ll apply:
+- `struct` for data representation.
+- `malloc` and `free` for dynamic memory.
+- Linked lists and hashing for storage.
+
+---
+
+## 14. Final Thoughts
+
+Data structures are the **backbone of computer science**.  
+They turn raw memory into **organized, searchable, and efficient systems**.
+
+From **arrays** to **hash tables**, these tools are everywhere — in databases, search engines, operating systems, and your favorite apps.  
+Mastering them is one of the most important steps in becoming a strong programmer.
